@@ -8,18 +8,11 @@ import model
 
 def letkf(fcst: np.ndarray, h_nda: np.ndarray, r_nda: np.ndarray, yo_nda: np.ndarray,
           rho: float, k_ens: int, l_loc: int) -> tuple:
-    """
-    :param fcst:         [k_ens, N_MODEL]
-    :param h_nda:        [P_OBS, N_MODEL]
-    :param r_nda:        [P_OBS, P_OBS]
-    :param yo_nda:       [P_OBS, 1]
-    :param rho:
-    :param k_ens:
-    :param l_loc:
-    :return xa:          [N_MODEL, k_ens]
-    :return xfpt:        [N_MODEL, N_MODEL]
-    :return xapt:        [N_MODEL, N_MODEL]
-    """
+
+    assert fcst.shape == (k_ens, N_MODEL)
+    assert h_nda.shape == (P_OBS, N_MODEL)
+    assert r_nda.shape == (P_OBS, P_OBS)
+    assert yo_nda.shape == (P_OBS, 1)
 
     h = np.asmatrix(h_nda)
     r = np.asmatrix(r_nda)
@@ -58,7 +51,9 @@ def letkf(fcst: np.ndarray, h_nda: np.ndarray, r_nda: np.ndarray, yo_nda: np.nda
         xail  = xfl * i_1m + xfptl * (wal * i_1m + waptl)
         xai[i, :] = xail[:, :]
 
-    return np.real(xai.T.A)
+    xa = np.real(xai.T.A)
+    assert xa.shape == (k_ens, N_MODEL)
+    return xa
 
 
 def get_localization_weight(ind: list, ic: int, length: int):
