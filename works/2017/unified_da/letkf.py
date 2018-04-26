@@ -14,22 +14,20 @@ def letkf(fcst: np.ndarray, h_nda: np.ndarray, r_nda: np.ndarray, yo_nda: np.nda
     assert r_nda.shape == (P_OBS, P_OBS)
     assert yo_nda.shape == (P_OBS, 1)
 
-    h = np.asmatrix(h_nda)
-    r = np.asmatrix(r_nda)
-    yo = np.asmatrix(yo_nda)
-    if fcst.shape[1] != N_MODEL:
-        raise Exception
+    h = h_nda
+    r = r_nda
+    yo = yo_nda
 
-    i_mm = np.asmatrix(np.identity(k_ens))
-    i_1m = np.asmatrix(np.ones((1, k_ens)))
+    i_mm = np.identity(k_ens)
+    i_1m = np.ones((1, k_ens))
 
-    xfm = np.matrix(fcst[:, :]).T
-    xf = np.mean(xfm, axis=1)
-    xfpt = xfm - xf * i_1m
-    ybpt = h * xfpt
-    yb = h * xf
+    xfm = fcst[:, :].T
+    xf = np.mean(xfm, axis=1)[:, np.newaxis]
+    xfpt = xfm - xf @ i_1m
+    ybpt = h @ xfpt
+    yb = h @ xf
 
-    xai = np.matrix(np.zeros((N_MODEL, k_ens)))
+    xai = np.zeros((N_MODEL, k_ens))
 
     for i in range(N_MODEL):
         # step 3
@@ -38,20 +36,20 @@ def letkf(fcst: np.ndarray, h_nda: np.ndarray, r_nda: np.ndarray, yo_nda: np.nda
         yol   = yo[ind, :]
         ybl   = yb[ind, :]
         ybptl = ybpt[ind, :]
-        xfl   = xf[i, :]
-        xfptl = xfpt[i, :]
+        xfl   = xf[i:i + 1, :]
+        xfptl = xfpt[i:i + 1, :]
         rl    = r[ind, :][:, ind]
 
         # step 4-9
-        cl    = ybptl.T * np.asmatrix(rl.I.A * lw)
-        pal   = (((k_ens - 1.0) / rho) * i_mm + cl * ybptl).I
-        waptl = np.asmatrix(np.real(sqrtm((k_ens - 1.0) * pal)))
+        cl    = ybptl.T @ (np.linalg.inv(rl) * lw)
+        pal   = np.linalg.inv(((k_ens - 1.0) / rho) * i_mm + cl @ ybptl)
+        waptl = np.real(sqrtm((k_ens - 1.0) * pal))
 
-        wal   = pal * cl * (yol - ybl)
-        xail  = xfl * i_1m + xfptl * (wal * i_1m + waptl)
+        wal   = pal @ cl @ (yol - ybl)
+        xail  = xfl @ i_1m + xfptl @ (wal @ i_1m + waptl)
         xai[i, :] = xail[:, :]
 
-    xa = np.real(xai.T.A)
+    xa = np.real(xai.T)
     assert xa.shape == (k_ens, N_MODEL)
     return xa
 
