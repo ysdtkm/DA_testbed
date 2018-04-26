@@ -6,17 +6,14 @@ from const import N_MODEL, P_OBS, pos_obs
 import model
 
 
-def letkf(fcst: np.ndarray, h_nda: np.ndarray, r_nda: np.ndarray, yo_nda: np.ndarray,
-          rho: float, k_ens: int, l_loc: int) -> tuple:
-
+def letkf(fcst, h, r, yo, rho, k_ens, l_loc):
     assert fcst.shape == (k_ens, N_MODEL)
-    assert h_nda.shape == (P_OBS, N_MODEL)
-    assert r_nda.shape == (P_OBS, P_OBS)
-    assert yo_nda.shape == (P_OBS, 1)
-
-    h = h_nda
-    r = r_nda
-    yo = yo_nda
+    assert h.shape == (P_OBS, N_MODEL)
+    assert r.shape == (P_OBS, P_OBS)
+    assert yo.shape == (P_OBS, 1)
+    assert isinstance(rho, float)
+    assert isinstance(k_ens, int)
+    assert isinstance(l_loc, (int, float))
 
     i_mm = np.identity(k_ens)
     i_1m = np.ones((1, k_ens))
@@ -27,7 +24,7 @@ def letkf(fcst: np.ndarray, h_nda: np.ndarray, r_nda: np.ndarray, yo_nda: np.nda
     ybpt = h @ xfpt
     yb = h @ xf
 
-    xai = np.zeros((N_MODEL, k_ens))
+    xai = np.zeros((k_ens, N_MODEL))
 
     for i in range(N_MODEL):
         # step 3
@@ -44,14 +41,12 @@ def letkf(fcst: np.ndarray, h_nda: np.ndarray, r_nda: np.ndarray, yo_nda: np.nda
         cl    = ybptl.T @ (np.linalg.inv(rl) * lw)
         pal   = np.linalg.inv(((k_ens - 1.0) / rho) * i_mm + cl @ ybptl)
         waptl = np.real(sqrtm((k_ens - 1.0) * pal))
-
         wal   = pal @ cl @ (yol - ybl)
         xail  = xfl @ i_1m + xfptl @ (wal @ i_1m + waptl)
-        xai[i, :] = xail[:, :]
+        assert xail.shape == (1, k_ens)
+        xai[:, i] = xail[0, :]
 
-    xa = np.real(xai.T)
-    assert xa.shape == (k_ens, N_MODEL)
-    return xa
+    return xai
 
 
 def get_localization_weight(ind: list, ic: int, length: int):
