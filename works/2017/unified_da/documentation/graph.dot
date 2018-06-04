@@ -1,0 +1,9 @@
+digraph {
+    letkf -> model;
+    letkf -> const;
+    main -> const;
+    main -> model;
+    main -> letkf;
+    model -> const;
+    plot -> const;
+}
