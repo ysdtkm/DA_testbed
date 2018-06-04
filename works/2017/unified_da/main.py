@@ -7,7 +7,6 @@ from obs import geth, getr
 import numpy as np
 from const import EXPLIST, DT, STEPS, STEP_FREE, N_MODEL, P_OBS, FERR_INI, AINT, SEED
 
-
 def main():
     np.random.seed(SEED * 1)
     nature = exec_nature()
@@ -21,11 +20,7 @@ def main():
         free = exec_free_run(settings)
         anl = exec_assim_cycle(settings, free, obs)
 
-
-def exec_nature() -> np.ndarray:
-    """
-    :return all_true: [STEPS, N_MODEL]
-    """
+def exec_nature():
     all_true = np.empty((STEPS, N_MODEL))
     true = np.random.randn(N_MODEL) * FERR_INI
 
@@ -38,29 +33,19 @@ def exec_nature() -> np.ndarray:
     np.random.seed(SEED * 2)
     return all_true
 
-
-def exec_obs(nature: np.ndarray) -> np.ndarray:
-    """
-    note: this method currently cannot handle non-diagonal element of R
-
-    :param nature:   [STEPS, N_MODEL]
-    :return all_obs: [STEPS, P_OBS]
-    """
+def exec_obs(nature):
+    assert isinstance(nature, np.ndarray)
+    assert nature.shape == (STEPS, N_MODEL)
     all_obs = np.empty((STEPS, P_OBS))
     h = geth()
     r = getr()
     for i in range(0, STEPS):
         all_obs[i, :] = h.dot(nature[i, :]) + np.random.randn(P_OBS) * r.diagonal() ** 0.5
-
     np.save("data/obs.npy", all_obs)
     return all_obs
 
-
-def exec_free_run(settings: dict) -> np.ndarray:
-    """
-    :param settings:
-    :return free_run: [STEPS, k_ens, N_MODEL]
-    """
+def exec_free_run(settings):
+    assert isinstance(settings, dict)
     free_run = np.empty((STEPS, settings["k_ens"], N_MODEL))
     for m in range(0, settings["k_ens"]):
         free_run[0, m, :] = np.random.randn(N_MODEL) * FERR_INI
@@ -68,14 +53,10 @@ def exec_free_run(settings: dict) -> np.ndarray:
             free_run[i, m, :] = Model().rk4(free_run[i - 1, m, :], DT)
     return free_run
 
-
-def exec_assim_cycle(settings: dict, all_fcst: np.ndarray, all_obs: np.ndarray) -> np.ndarray:
-    """
-    :param settings:
-    :param all_fcst:  [STEPS, k_ens, N_MODEL]
-    :param all_obs:   [STEPS, P_OBS]
-    :return all_fcst: [STEPS, k_ens, N_MODEL]
-    """
+def exec_assim_cycle(settings, all_fcst, all_obs):
+    assert isinstance(settings, dict)
+    assert all_fcst.shape == (STEPS, settings["k_ens"], N_MODEL)
+    assert all_obs.shape == (STEPS, P_OBS)
 
     # prepare containers
     r = getr()
@@ -90,13 +71,11 @@ def exec_assim_cycle(settings: dict, all_fcst: np.ndarray, all_obs: np.ndarray) 
         for i in range(STEP_FREE, STEPS):
             for m in range(0, settings["k_ens"]):
                 fcst[m, :] = Model().rk4(all_fcst[i - 1, m, :], DT)
-
             if i % AINT == 0:
                 obs_used[i, :] = all_obs[i, :]
                 all_back_cov[i, :, :] = get_back_cov(fcst)
                 fcst[:, :] = \
                     analyze_one_window(fcst, all_obs[i, :], h, r, settings)
-
             all_fcst[i, :, :] = fcst[:, :]
 
     except (np.linalg.LinAlgError, ValueError) as e:
@@ -113,40 +92,27 @@ def exec_assim_cycle(settings: dict, all_fcst: np.ndarray, all_obs: np.ndarray) 
     np.save("data/%s_obs.npy" % settings["name"], obs_used)
     np.save("data/%s_cycle.npy" % settings["name"], all_fcst)
     np.save("data/%s_bcov.npy" % settings["name"], all_back_cov)
-
     return all_fcst
 
-
-def analyze_one_window(fcst: np.ndarray, obs: np.ndarray, h: np.ndarray, r: np.ndarray,
-                       settings: dict) -> tuple:
-    """
-    :param  fcst:         [k_ens, N_MODEL]
-    :param  obs:          [P_OBS]
-    :param  h:            [P_OBS, N_MODEL]
-    :param  r:            [P_OBS, P_OBS]
-    :param  settings:
-    :return anl:          [k_ens, N_MODEL]
-    """
+def analyze_one_window(fcst, obs, h, r, settings):
+    assert isinstance(settings, dict)
+    assert fcst.shape == (settings["k_ens"], N_MODEL)
+    assert obs.shape == (P_OBS,)
+    assert h.shape == (P_OBS, N_MODEL)
+    assert r.shape == (P_OBS, P_OBS)
 
     anl = np.empty((settings["k_ens"], N_MODEL))
     yo = obs[:, np.newaxis]
-
     if settings["method"] == "letkf":
         anl[:, :] = letkf.letkf(fcst[:, :], h[:, :], r[:, :], yo[:, :],
                                 settings["rho"], settings["k_ens"], settings["l_loc"])
     else:
         raise Exception("analysis method mis-specified: %s" % settings["method"])
-
     return anl[:, :]
 
-
-def get_back_cov(ens: np.ndarray):
-    """
-    O(n^2)
-    :param  ens:          [k_ens, N_MODEL]
-    :return cov:          [N_MODEL, N_MODEL]
-    """
+def get_back_cov(ens):
     k_ens = ens.shape[0]
+    assert ens.shape == (k_ens, N_MODEL)
     ens_mean = np.mean(ens, axis=0)
     cov = np.empty((N_MODEL, N_MODEL))
     for i in range(N_MODEL):
@@ -156,11 +122,5 @@ def get_back_cov(ens: np.ndarray):
             cov[i, j] = np.sum(ptb_i * ptb_j) / (k_ens - 1.0)
     return cov
 
-
 if __name__ == "__main__":
-    try:
-        main()
-    except KeyboardInterrupt:
-        print("process interrupted by keyboard.")
-        import sys
-        sys.exit(1)
+    main()

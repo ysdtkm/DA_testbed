@@ -3,6 +3,17 @@
 import numpy as np
 from const import N_MODEL, P_OBS, pos_obs, OERR
 
+class Scaler_obs:
+    def __init__(self, val, type, position, sigma_r):
+        assert isinstance(val, float)
+        assert isinstance(type, string)
+        assert isinstance(position, [int, float])
+        assert isinstance(sigma_r, float)
+        self.val = val
+        self.type = type
+        self.position = position
+        self.sigma_r = sigma_r
+
 def dist(i1, i2):
     assert isinstance(i1, int)
     assert isinstance(i2, int)
