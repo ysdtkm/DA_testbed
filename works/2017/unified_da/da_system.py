@@ -5,18 +5,20 @@ from const import N_MODEL, P_OBS
 import letkf
 
 class Da_system:
-    def __init__(self):
-        pass
-
-    def analyze_one_window(self, fcst, obs, settings):
+    def __init__(self, settings):
         assert isinstance(settings, dict)
-        assert fcst.shape == (settings["k_ens"], N_MODEL)
-        assert obs.shape == (P_OBS,)
+        # self.settings = settings
+        self.method = settings["method"]
+        self.rho = settings["rho"]
+        self.k_ens = settings["k_ens"]
+        self.l_loc = settings["l_loc"]
 
-        if settings["method"] == "letkf":
-            anl = letkf.letkf(fcst, obs, settings["rho"], settings["k_ens"], settings["l_loc"])
-            assert anl.shape == (settings["k_ens"], N_MODEL)
+    def analyze_one_window(self, fcst, obs):
+        assert fcst.shape == (self.k_ens, N_MODEL)
+        if self.method == "letkf":
+            anl = letkf.letkf(fcst, obs, self.rho, self.l_loc)
         else:
-            raise Exception("analysis method mis-specified: %s" % settings["method"])
+            raise Exception("analysis method mis-specified: %s" % self.settings["method"])
+        assert anl.shape == fcst.shape
         return anl[:, :]
 

@@ -63,6 +63,8 @@ def exec_assim_cycle(settings, all_fcst, all_obs):
     fcst = np.empty((settings["k_ens"], N_MODEL))
     all_back_cov = np.empty((STEPS, N_MODEL, N_MODEL))
 
+    da_sys = Da_system(settings)
+
     # forecast-analysis cycle
     try:
         for i in range(STEP_FREE, STEPS):
@@ -70,7 +72,7 @@ def exec_assim_cycle(settings, all_fcst, all_obs):
                 fcst[m, :] = Model().rk4(all_fcst[i - 1, m, :], DT)
             if i % AINT == 0:
                 all_back_cov[i, :, :] = get_back_cov(fcst)
-                fcst[:, :] = Da_system().analyze_one_window(fcst, all_obs[i, :], settings)
+                fcst[:, :] = da_sys.analyze_one_window(fcst, all_obs[i, :])
             all_fcst[i, :, :] = fcst[:, :]
 
     except (np.linalg.LinAlgError, ValueError) as e:

@@ -15,7 +15,7 @@ STEP_ALL = calc plot tex
 # time = time --format="spent %E sec"
 time =
 
-src_calc = main.py const.py model.py letkf.py obs.py
+src_calc = main.py const.py model.py da_system.py letkf.py obs.py
 dep_calc =
 out_calc = data/*.bin
 cmd_calc = find data -type f | xargs rm -f; mkdir -p data; $(time) python3 main.py

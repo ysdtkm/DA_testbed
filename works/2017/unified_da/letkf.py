@@ -5,7 +5,8 @@ from scipy.linalg import sqrtm
 from const import N_MODEL, P_OBS
 from obs import obs_within, dist, geth, getr
 
-def letkf(fcst, obs, rho, k_ens, l_loc):
+def letkf(fcst, obs, rho, l_loc):
+    k_ens = fcst.shape[0]
     assert fcst.shape == (k_ens, N_MODEL)
     assert obs.shape == (P_OBS,)
     assert isinstance(rho, float)
