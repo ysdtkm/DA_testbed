@@ -31,14 +31,11 @@ def obs_within(i, l_loc):
             list_j.append(j)
     return list_j
 
-def getr():
-    # note: Non-diagonal element in R is ignored in main.exec_obs()
-    r = np.identity(P_OBS) * OERR ** 2
-    return r
-
-def geth():
+def geth(obs):
+    assert obs.shape == (P_OBS,)
     h = np.zeros((P_OBS, N_MODEL))
     for j in range(P_OBS):
-        i = pos_obs(j)
+        i = obs[j].position
+        assert isinstance(i, int)
         h[j, i] = 1.0
     return h

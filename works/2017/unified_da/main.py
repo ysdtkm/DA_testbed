@@ -37,11 +37,11 @@ def exec_obs(nature):
     assert isinstance(nature, np.ndarray)
     assert nature.shape == (STEPS, N_MODEL)
     all_obs = np.empty((STEPS, P_OBS), dtype=object)
-    h = geth()
     for i in range(0, STEPS):
-        obs = h @ nature[i, :] + np.random.randn(P_OBS) * OERR
         for j in range(P_OBS):
-            all_obs[i, j] = Scaler_obs(obs[j], "", pos_obs(j), OERR)
+            k = pos_obs(j)
+            oval = nature[i, k] + np.random.randn(1)[0] * OERR
+            all_obs[i, j] = Scaler_obs(oval, "", pos_obs(j), OERR)
     np.save("data/obs.npy", all_obs)
     return all_obs
 
@@ -93,7 +93,7 @@ def analyze_one_window(fcst, obs, settings):
     assert fcst.shape == (settings["k_ens"], N_MODEL)
     assert obs.shape == (P_OBS,)
 
-    h = geth()
+    h = geth(obs)
     r = np.identity(P_OBS) * OERR ** 2
     anl = np.empty((settings["k_ens"], N_MODEL))
     yo = np.empty((P_OBS, 1))
