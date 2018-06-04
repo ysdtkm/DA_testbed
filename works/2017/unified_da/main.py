@@ -81,6 +81,8 @@ def exec_assim_cycle(settings, all_fcst, all_obs):
 
 def get_back_cov(ens):
     k_ens = ens.shape[0]
+    if k_ens == 1:
+        return np.zeros((N_MODEL, N_MODEL))
     assert ens.shape == (k_ens, N_MODEL)
     ens_mean = np.mean(ens, axis=0)
     cov = np.empty((N_MODEL, N_MODEL))

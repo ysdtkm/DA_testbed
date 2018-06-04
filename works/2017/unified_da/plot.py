@@ -146,6 +146,8 @@ def plot_cov_corr(back_cov, name, k_ens):
         plt.close()
 
     def plot_corr_homo(ave_corr, rms_corr, out, k_ens):
+        if k_ens == 1:
+            return
         sum_ave_corr = np.zeros(N_MODEL)
         sum_rms_corr = np.zeros(N_MODEL)
         for i in range(N_MODEL):
