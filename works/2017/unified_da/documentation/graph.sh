@@ -1,1 +1,1 @@
-dot -Tpdf graph.dot -o sample.pdf
+dot -Tpng graph.dot -o graph.png

@@ -1,9 +1,13 @@
 digraph {
-    letkf -> model;
+    letkf -> obs;
     letkf -> const;
     main -> const;
     main -> model;
-    main -> letkf;
+    main -> da_system;
+    main -> obs;
     model -> const;
     plot -> const;
+    da_system -> const;
+    da_system -> letkf;
+    obs -> const;
 }
