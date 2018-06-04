@@ -3,7 +3,7 @@
 import numpy as np
 from scipy.linalg import sqrtm
 from const import N_MODEL, AINT
-from obs import obs_within, dist, getr, get_background_obs
+from obs import dist, getr, get_background_obs
 
 def letkf(fcst, obs, rho, l_loc, t_end):
     k_ens = fcst.shape[1]
@@ -82,4 +82,14 @@ def get_localization_weight(ind, ic, length, obs):
         lw[j, :] = co
         lw[:, j] = co
     return lw
+
+def obs_within(i, l_loc, obs):
+    # O(p). This can be modified to O(1)
+    assert isinstance(i, int)
+    assert isinstance(l_loc, int)
+    list_j = []
+    for j in range(len(obs)):
+        if dist(i, obs[j].position) <= l_loc:
+            list_j.append(j)
+    return list_j
 
