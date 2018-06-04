@@ -34,7 +34,8 @@ def obs_within(i, l_loc, obs):
     return list_j
 
 def geth(obs):
-    assert isinstance(obs[0], Scaler_obs)
+    if len(obs) > 0:
+        assert isinstance(obs[0], Scaler_obs)
     h = np.zeros((len(obs), N_MODEL))
     for j in range(len(obs)):
         i = obs[j].position
@@ -43,7 +44,8 @@ def geth(obs):
     return h
 
 def getr(obs):
-    assert isinstance(obs[0], Scaler_obs)
+    if len(obs) > 0:
+        assert isinstance(obs[0], Scaler_obs)
     r = np.zeros((len(obs), len(obs)))
     for j in range(len(obs)):
         r[j, j] = obs[j].sigma_r ** 2
