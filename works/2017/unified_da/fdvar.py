@@ -14,7 +14,8 @@ def fdvar(fcst_0, obs, sigma_b, t_end):
     assert fcst_0.shape == (N_MODEL,)
 
     first_guess = np.copy(fcst_0)
-    anl_0 = fmin_bfgs(fdvar_2j, first_guess, args=(fcst_0, obs, sigma_b, t_end), disp=True)
+    cf = partial(fdvar_2j, fcst_0=fcst_0, obs=obs, sigma_b=sigma_b, t_end=t_end)
+    anl_0 = fmin_bfgs(cf, first_guess, disp=True)
     anl_1 = np.copy(anl_0)
     for i in range(AINT):
         anl_1 = Model().rk4(anl_1, DT)
