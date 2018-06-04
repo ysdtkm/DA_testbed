@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 
+import traceback
 import model
 from model import Model
 from obs import Scaler_obs
@@ -59,23 +60,19 @@ def exec_assim_cycle(settings, all_fcst, all_obs):
     assert all_fcst.shape == (STEPS, settings["k_ens"], N_MODEL)
     assert all_obs.shape == (STEPS, P_OBS)
 
-    fcst = np.empty((settings["k_ens"], N_MODEL))
     all_back_cov = np.empty((STEPS, N_MODEL, N_MODEL))
     da_sys = Da_system(settings)
 
     try:
         for i in range(STEP_FREE, STEPS):
             for m in range(0, settings["k_ens"]):
-                fcst[m, :] = Model().rk4(all_fcst[i - 1, m, :], DT)
+                all_fcst[i, m, :] = Model().rk4(all_fcst[i - 1, m, :], DT)
             if i % AINT == 0:
-                all_back_cov[i, :, :] = get_back_cov(fcst)
-                fcst[:, :] = da_sys.analyze_one_window(fcst, all_obs[i, :])
-            all_fcst[i, :, :] = fcst[:, :]
+                all_back_cov[i, :, :] = get_back_cov(all_fcst[i, :, :])
+                all_fcst[i, :, :] = da_sys.analyze_one_window(all_fcst[i, :, :], all_obs[i, :])
     except (np.linalg.LinAlgError, ValueError) as e:
-        import traceback
         print("ANALYSIS CYCLE DIVERGED: %s" % e)
         print("Settings: ", settings)
-        print("This experiment is terminated (see error traceback below). Continue on next experiments.")
         traceback.print_exc()
 
     np.save("data/%s_cycle.npy" % settings["name"], all_fcst)
