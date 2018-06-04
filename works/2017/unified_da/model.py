@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 
 import numpy as np
-from const import N_MODEL, P_OBS, pos_obs, OERR
+from const import N_MODEL
 
 class Model:
     def __init__(self):
@@ -51,43 +51,6 @@ class Model:
         for i in range(100):
             x = self.rk4(x, dt)
         print(x)
-
-
-def dist(i1: int, i2: int) -> int:
-    d1 = abs(i1 - i2)
-    dist = min(d1, N_MODEL - d1)
-    return dist
-
-
-def obs_within(i: int, l_loc: int) -> list:
-    # O(p). This can be modified to O(1)
-
-    list_j = []
-    for j in range(P_OBS):
-        if dist(i, pos_obs(j)) <= l_loc:
-            list_j.append(j)
-    return list_j
-
-
-def getr() -> np.ndarray:
-    """
-    note: Non-diagonal element in R is ignored in main.exec_obs()
-    :return r: [P_OBS, P_OBS]
-    """
-    r = np.identity(P_OBS) * OERR ** 2
-    return r
-
-
-def geth() -> np.ndarray:
-    """
-    :return h: [P_OBS, N_MODEL]
-    """
-    h = np.zeros((P_OBS, N_MODEL))
-    for j in range(P_OBS):
-        i = pos_obs(j)
-        h[j, i] = 1.0
-    return h
-
 
 if __name__ == "__main__":
     Model().test_model()

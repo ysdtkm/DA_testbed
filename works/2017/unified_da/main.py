@@ -3,6 +3,7 @@
 import letkf
 import model
 from model import Model
+from obs import geth, getr
 import numpy as np
 from const import EXPLIST, DT, STEPS, STEP_FREE, N_MODEL, P_OBS, FERR_INI, AINT, SEED
 
@@ -46,8 +47,8 @@ def exec_obs(nature: np.ndarray) -> np.ndarray:
     :return all_obs: [STEPS, P_OBS]
     """
     all_obs = np.empty((STEPS, P_OBS))
-    h = model.geth()
-    r = model.getr()
+    h = geth()
+    r = getr()
     for i in range(0, STEPS):
         all_obs[i, :] = h.dot(nature[i, :]) + np.random.randn(P_OBS) * r.diagonal() ** 0.5
 
@@ -77,8 +78,8 @@ def exec_assim_cycle(settings: dict, all_fcst: np.ndarray, all_obs: np.ndarray) 
     """
 
     # prepare containers
-    r = model.getr()
-    h = model.geth()
+    r = getr()
+    h = geth()
     fcst = np.empty((settings["k_ens"], N_MODEL))
     all_back_cov = np.empty((STEPS, N_MODEL, N_MODEL))
     obs_used = np.empty((STEPS, P_OBS))
