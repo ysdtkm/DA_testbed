@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 
+from itertools import chain
 import numpy as np
 from const import N_MODEL, AINT
 import letkf
@@ -7,7 +8,6 @@ import letkf
 class Da_system:
     def __init__(self, settings):
         assert isinstance(settings, dict)
-        # self.settings = settings
         self.method = settings["method"]
         self.rho = settings["rho"]
         self.k_ens = settings["k_ens"]
@@ -17,7 +17,7 @@ class Da_system:
         assert fcst.shape == (AINT, self.k_ens, N_MODEL)
         if self.method == "letkf":
             assert self.k_ens > 1
-            anl = letkf.letkf(fcst, obs[-1], self.rho, self.l_loc, t_anl)
+            anl = letkf.letkf(fcst, list(chain.from_iterable(obs)), self.rho, self.l_loc, t_anl)
         elif self.method == "3dvar":
             assert self.k_ens == 1
             raise Exception("da_system.py: 4D-Var is not implemented")

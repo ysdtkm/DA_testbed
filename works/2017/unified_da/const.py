@@ -13,7 +13,7 @@ FCST_LT = 0
 
 OERR = 0.5
 FERR_INI = 10.0
-AINT = 1
+AINT = 2
 SEED = 10 ** 8 + 7
 
 EXPLIST = [

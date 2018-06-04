@@ -24,12 +24,12 @@ def letkf(fcst, obs, rho, l_loc, t_end):
         yo[j, 0] = obs[j].val
     r = getr(obs)
 
-    xfm = fcst[-1, :, :].T
-    xf = np.mean(xfm, axis=1)[:, np.newaxis]
-    xfpt = xfm - xf @ i_1m
-    ybm = get_background_obs(obs, fcst, t_end)
-    yb = np.mean(ybm, axis=1)[:, np.newaxis]
-    ybpt = ybm[:, :] - yb[:, :]
+    xf_raw = fcst[-1, :, :].T
+    xf = np.mean(xf_raw, axis=1)[:, np.newaxis]
+    xfpt = xf_raw - xf @ i_1m
+    yb_raw = get_background_obs(obs, fcst, t_end)
+    yb = np.mean(yb_raw, axis=1)[:, np.newaxis]
+    ybpt = yb_raw[:, :] - yb[:, :]
 
     xai = np.zeros((k_ens, N_MODEL))
     for i in range(N_MODEL):
