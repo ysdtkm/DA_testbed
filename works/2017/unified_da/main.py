@@ -1,11 +1,11 @@
 #!/usr/bin/env python
 
-import letkf
 import model
 from model import Model
 from obs import Scaler_obs
 import numpy as np
 from const import EXPLIST, DT, STEPS, STEP_FREE, N_MODEL, P_OBS, OERR, FERR_INI, AINT, SEED, pos_obs
+from da_system import Da_system
 
 def main():
     np.random.seed(SEED * 1)
@@ -70,7 +70,7 @@ def exec_assim_cycle(settings, all_fcst, all_obs):
                 fcst[m, :] = Model().rk4(all_fcst[i - 1, m, :], DT)
             if i % AINT == 0:
                 all_back_cov[i, :, :] = get_back_cov(fcst)
-                fcst[:, :] = analyze_one_window(fcst, all_obs[i, :], settings)
+                fcst[:, :] = Da_system().analyze_one_window(fcst, all_obs[i, :], settings)
             all_fcst[i, :, :] = fcst[:, :]
 
     except (np.linalg.LinAlgError, ValueError) as e:
@@ -87,18 +87,6 @@ def exec_assim_cycle(settings, all_fcst, all_obs):
     np.save("data/%s_cycle.npy" % settings["name"], all_fcst)
     np.save("data/%s_bcov.npy" % settings["name"], all_back_cov)
     return all_fcst
-
-def analyze_one_window(fcst, obs, settings):
-    assert isinstance(settings, dict)
-    assert fcst.shape == (settings["k_ens"], N_MODEL)
-    assert obs.shape == (P_OBS,)
-
-    if settings["method"] == "letkf":
-        anl = letkf.letkf(fcst, obs, settings["rho"], settings["k_ens"], settings["l_loc"])
-        assert anl.shape == (settings["k_ens"], N_MODEL)
-    else:
-        raise Exception("analysis method mis-specified: %s" % settings["method"])
-    return anl[:, :]
 
 def get_back_cov(ens):
     k_ens = ens.shape[0]
