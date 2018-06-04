@@ -13,6 +13,7 @@ evince image/merged.pdf
 * letkf: LETKF core programs
 * model: model dependent functions including observation
 * plot: all visualization functions. Read data/ and write image/
+* const: Run-time settings
 
 ## Todo
-* OOP
+* Better modularbility by OOP
