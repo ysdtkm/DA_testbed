@@ -20,9 +20,9 @@ EXPLIST = [
     dict(name="letkf", method="letkf", rho=1.2, k_ens=21, l_loc=10),
 ]
 
-
-def pos_obs(j: int) -> int:
+def pos_obs(j):
     # return model grid i of j-th observation
+    assert isinstance(j, int)
     return j * (N_MODEL // P_OBS)
 
 

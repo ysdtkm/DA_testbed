@@ -5,7 +5,6 @@ from scipy.linalg import sqrtm
 from const import N_MODEL, P_OBS, pos_obs
 from obs import obs_within, dist
 
-
 def letkf(fcst, h, r, yo, rho, k_ens, l_loc):
     assert fcst.shape == (k_ens, N_MODEL)
     assert h.shape == (P_OBS, N_MODEL)
@@ -48,9 +47,11 @@ def letkf(fcst, h, r, yo, rho, k_ens, l_loc):
 
     return xai
 
-
-def get_localization_weight(ind: list, ic: int, length: int):
+def get_localization_weight(ind, ic, length):
     # O(dim^2)
+    assert isinstance(ind, list)
+    assert isinstance(ic, int)
+    assert isinstance(length, (int, float))
 
     def gc99(r):
         r = abs(r)
