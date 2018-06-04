@@ -10,7 +10,6 @@ import matplotlib.pyplot as plt
 
 rmse_hash = {}
 
-
 def plot_all():
     os.system("mkdir -p image/true")
 
@@ -29,7 +28,6 @@ def plot_all():
         plot_time_value(hist_true, hist_fcst, name)
         plot_diff_ens_mean(hist_true, hist_fcst, name)
         plot_cov_corr(back_cov, name, k_ens)
-
 
 def plot_rmse_spread(hist_true, hist_fcst, name, k_ens):
     # Error and Spread_square for each grid and time
@@ -66,7 +64,6 @@ def plot_rmse_spread(hist_true, hist_fcst, name, k_ens):
     plt.clf()
     plt.close()
 
-
 def plot_time_value(hist_true, hist_fcst, name):
     hist_fcst_mean = np.mean(hist_fcst, axis=1)
 
@@ -82,7 +79,6 @@ def plot_time_value(hist_true, hist_fcst, name):
     plt.clf()
     plt.close()
 
-
 def plot_true(hist_true):
     cm = plt.imshow(hist_true, aspect="auto")
     cm.set_clim(-10, 15)
@@ -93,7 +89,6 @@ def plot_true(hist_true):
     plt.title("true")
     plt.savefig("./image/true/true.pdf")
     plt.close()
-
 
 def plot_diff_ens_mean(hist_true, hist_fcst, name):
     hist_fcst_mean = np.mean(hist_fcst, axis=1)
@@ -108,7 +103,6 @@ def plot_diff_ens_mean(hist_true, hist_fcst, name):
     plt.title("analysis error")
     plt.savefig("./image/%s/error.pdf" % name)
     plt.close()
-
 
 def plot_cov_corr(back_cov, name, k_ens):
     def reduce(back_cov):
@@ -176,7 +170,6 @@ def plot_cov_corr(back_cov, name, k_ens):
     plot_matrix(ave_corr, "./image/%s/b_corr.pdf" % name, "mean background correlation", 1.0)
     plot_matrix(rms_corr, "./image/%s/b_rms_corr.pdf" % name, "RMS background correlation", 1.0)
     plot_corr_homo(ave_corr, rms_corr, "./image/%s/b_corr_homo.pdf" % name, k_ens)
-
 
 if __name__ == "__main__":
     plot_all()
