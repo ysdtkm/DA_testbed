@@ -6,6 +6,7 @@ make
 ```
 
 ## Dependency of modules
+<img src="documentation/graph.png">
 
 ## Todo
 * OOP
