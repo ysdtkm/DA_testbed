@@ -3,42 +3,29 @@
 import numpy as np
 from const import N_MODEL, P_OBS, pos_obs, OERR
 
+class Model:
+    def __init__(self):
+        pass
 
-def rk4(x: np.ndarray, dt: float) -> np.ndarray:
-    """
-    :param x:   [dimm]
-    :param dt:
-    :return x:  [dimm]
-    """
+    def rk4(self, x, dt):
+        assert isinstance(x, np.ndarray)
+        assert isinstance(dt, float)
+        assert dt > 0.0
+        x0 = np.copy(x)
+        k1 = self.tendency(x0)
+        x2 = x0 + k1 * dt / 2.0
+        k2 = self.tendency(x2)
+        x3 = x0 + k2 * dt / 2.0
+        k3 = self.tendency(x3)
+        x4 = x0 + k3 * dt
+        k4 = self.tendency(x4)
+        return x0 + (k1 + 2.0 * k2 + 2.0 * k3 + k4) * dt / 6.0
 
-    x0 = np.copy(x)
-    k1 = tendency(x0)
-    x2 = x0 + k1 * dt / 2.0
-    k2 = tendency(x2)
-    x3 = x0 + k2 * dt / 2.0
-    k3 = tendency(x3)
-    x4 = x0 + k3 * dt
-    k4 = tendency(x4)
-    return x0 + (k1 + 2.0 * k2 + 2.0 * k3 + k4) * dt / 6.0
-
-
-def tendency(x_in: np.ndarray) -> np.ndarray:
-    """
-    :param x_in: [dimm]
-    :return dx:  [dimm]
-    """
-    def avg(x):
-        return (np.roll(x, -1) + 2 * x + np.roll(x, 1)) * 0.25
-
-    smooth = False
-    if smooth:  # Rainwater and Hunt (2013) eq.33
-        f = 12.0
-        dx = - avg(np.roll(x_in, 2)) * avg(np.roll(x_in, 1)) \
-            + avg(avg(np.roll(x_in, 1)) * np.roll(x_in, -1)) - x_in + f
-    else:
+    def tendency(self, x_in):
+        assert isinstance(x_in, np.ndarray)
         f = 8.0
         dx = (np.roll(x_in, -1) - np.roll(x_in, 2)) * np.roll(x_in, 1) - x_in + f
-    return dx
+        return dx
 
 
 def finite_time_tangent_using_nonlinear(x0: np.ndarray, dt: float, iw: int) -> np.ndarray:

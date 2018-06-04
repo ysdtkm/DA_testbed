@@ -2,6 +2,7 @@
 
 import letkf
 import model
+from model import Model
 import numpy as np
 from const import EXPLIST, DT, STEPS, STEP_FREE, N_MODEL, P_OBS, FERR_INI, AINT, SEED
 
@@ -29,7 +30,7 @@ def exec_nature() -> np.ndarray:
 
     # forward integration i-1 -> i
     for i in range(0, STEPS):
-        true[:] = model.rk4(true[:], DT)
+        true[:] = Model().rk4(true[:], DT)
         all_true[i, :] = true[:]
     np.save("data/true.npy", all_true)
 
@@ -63,7 +64,7 @@ def exec_free_run(settings: dict) -> np.ndarray:
     for m in range(0, settings["k_ens"]):
         free_run[0, m, :] = np.random.randn(N_MODEL) * FERR_INI
         for i in range(1, STEP_FREE):
-            free_run[i, m, :] = model.rk4(free_run[i - 1, m, :], DT)
+            free_run[i, m, :] = Model().rk4(free_run[i - 1, m, :], DT)
     return free_run
 
 
@@ -87,7 +88,7 @@ def exec_assim_cycle(settings: dict, all_fcst: np.ndarray, all_obs: np.ndarray) 
     try:
         for i in range(STEP_FREE, STEPS):
             for m in range(0, settings["k_ens"]):
-                fcst[m, :] = model.rk4(all_fcst[i - 1, m, :], DT)
+                fcst[m, :] = Model().rk4(all_fcst[i - 1, m, :], DT)
 
             if i % AINT == 0:
                 obs_used[i, :] = all_obs[i, :]
