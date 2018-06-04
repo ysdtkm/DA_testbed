@@ -4,13 +4,15 @@ import numpy as np
 from const import N_MODEL, P_OBS, OERR
 
 class Scaler_obs:
-    def __init__(self, val, type, position, sigma_r):
+    def __init__(self, val, type, time, position, sigma_r):
         assert isinstance(val, float)
         assert isinstance(type, str)
+        assert isinstance(time, (int, float))
         assert isinstance(position, (int, float))
         assert isinstance(sigma_r, float)
         self.val = val
         self.type = type
+        self.time = time
         self.position = position
         self.sigma_r = sigma_r
 
