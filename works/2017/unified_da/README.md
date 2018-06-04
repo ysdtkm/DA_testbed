@@ -12,6 +12,7 @@ evince image/merged.pdf
 * main: run nature run, observation, and DA cycle. Output is saved at **data/**
 * da_system: wrapper for DA algorithms
 * letkf: LETKF core programs
+* fdvar: 4D-Var core programs
 * model: model integration and TLM
 * obs: observation generation and xb -> yb transform
 * plot: all visualization functions. Read **data/** and write **image/**

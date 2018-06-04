@@ -9,5 +9,9 @@ digraph {
     plot -> const;
     da_system -> const;
     da_system -> letkf;
+    da_system -> fdvar;
     obs -> const;
+    fdvar -> model;
+    fdvar -> const;
+    fdvar -> obs;
 }
