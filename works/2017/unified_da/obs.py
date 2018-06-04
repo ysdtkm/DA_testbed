@@ -33,6 +33,7 @@ def obs_within(i, l_loc):
 
 def geth(obs):
     assert obs.shape == (P_OBS,)
+    assert isinstance(obs[0], Scaler_obs)
     h = np.zeros((P_OBS, N_MODEL))
     for j in range(P_OBS):
         i = obs[j].position
