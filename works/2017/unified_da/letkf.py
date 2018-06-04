@@ -3,7 +3,7 @@
 import numpy as np
 from scipy.linalg import sqrtm
 from const import N_MODEL, AINT
-from obs import obs_within, dist, geth, getr
+from obs import obs_within, dist, getr, get_background_obs
 
 def letkf(fcst, obs, rho, l_loc, t_end):
     k_ens = fcst.shape[1]
@@ -22,20 +22,16 @@ def letkf(fcst, obs, rho, l_loc, t_end):
     for j in range(p_obs):
         assert t_end - AINT < obs[j].time <= t_end
         yo[j, 0] = obs[j].val
-    h = geth(obs)
     r = getr(obs)
 
     xfm = fcst[-1, :, :].T
     xf = np.mean(xfm, axis=1)[:, np.newaxis]
     xfpt = xfm - xf @ i_1m
-    ybm = h @ xfm
+    ybm = get_background_obs(obs, fcst, t_end)
     yb = np.mean(ybm, axis=1)[:, np.newaxis]
     ybpt = ybm[:, :] - yb[:, :]
-    assert np.allclose(ybpt, h @ xfpt)
-    assert np.allclose(yb, h @ xf)
 
     xai = np.zeros((k_ens, N_MODEL))
-
     for i in range(N_MODEL):
         # step 3
         ind   = obs_within(i, l_loc, obs)
