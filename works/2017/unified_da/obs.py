@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 
 import numpy as np
-from const import N_MODEL, P_OBS, pos_obs, OERR
+from const import N_MODEL, P_OBS, OERR
 
 class Scaler_obs:
     def __init__(self, val, type, position, sigma_r):
@@ -21,13 +21,13 @@ def dist(i1, i2):
     dist = min(d1, N_MODEL - d1)
     return dist
 
-def obs_within(i, l_loc):
+def obs_within(i, l_loc, obs):
     # O(p). This can be modified to O(1)
     assert isinstance(i, int)
     assert isinstance(l_loc, int)
     list_j = []
     for j in range(P_OBS):
-        if dist(i, pos_obs(j)) <= l_loc:
+        if dist(i, obs[j].position) <= l_loc:
             list_j.append(j)
     return list_j
 

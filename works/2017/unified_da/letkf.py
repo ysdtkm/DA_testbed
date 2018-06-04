@@ -2,7 +2,7 @@
 
 import numpy as np
 from scipy.linalg import sqrtm
-from const import N_MODEL, P_OBS, pos_obs
+from const import N_MODEL, P_OBS
 from obs import obs_within, dist, geth, getr
 
 def letkf(fcst, obs, rho, k_ens, l_loc):
@@ -31,8 +31,8 @@ def letkf(fcst, obs, rho, k_ens, l_loc):
 
     for i in range(N_MODEL):
         # step 3
-        ind   = obs_within(i, l_loc)
-        lw    = get_localization_weight(ind, i, l_loc)
+        ind   = obs_within(i, l_loc, obs)
+        lw    = get_localization_weight(ind, i, l_loc, obs)
         yol   = yo[ind, :]
         ybl   = yb[ind, :]
         ybptl = ybpt[ind, :]
@@ -51,11 +51,12 @@ def letkf(fcst, obs, rho, k_ens, l_loc):
 
     return xai
 
-def get_localization_weight(ind, ic, length):
+def get_localization_weight(ind, ic, length, obs):
     # O(dim^2)
     assert isinstance(ind, list)
     assert isinstance(ic, int)
     assert isinstance(length, (int, float))
+    assert obs.shape == (P_OBS,)
 
     def gc99(r):
         r = abs(r)
@@ -71,7 +72,7 @@ def get_localization_weight(ind, ic, length):
     dim = len(ind)
     lw = np.ones((dim, dim))
     for j, jg in enumerate(ind):
-        di = dist(ic, pos_obs(jg))
+        di = dist(ic, obs[j].position)
         if smooth:
             co = gc99(di / length)
         else:
