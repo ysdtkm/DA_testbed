@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-import numpy as np
+import autograd.numpy as np
 from const import N_MODEL
 
 class Model:
