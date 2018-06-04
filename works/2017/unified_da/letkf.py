@@ -7,9 +7,9 @@ from obs import obs_within, dist, geth, getr
 
 def letkf(fcst, obs, rho, l_loc):
     k_ens = fcst.shape[0]
-    p_obs = obs.shape[0]
+    assert isinstance(obs, list)
+    p_obs = len(obs)
     assert fcst.shape == (k_ens, N_MODEL)
-    assert obs.shape == (p_obs,)
     assert isinstance(rho, float)
     assert isinstance(k_ens, int)
     assert isinstance(l_loc, (int, float))

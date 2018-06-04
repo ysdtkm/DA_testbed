@@ -37,13 +37,15 @@ def exec_nature():
 def exec_obs(nature):
     assert isinstance(nature, np.ndarray)
     assert nature.shape == (STEPS, N_MODEL)
-    all_obs = np.empty((STEPS, P_OBS), dtype=object)
+    all_obs = []
     for i in range(0, STEPS):
+        obs_t = []
         for j in range(P_OBS):
             k = pos_obs(j)
             oval = nature[i, k] + np.random.randn(1)[0] * OERR
-            all_obs[i, j] = Scaler_obs(oval, "", i, pos_obs(j), OERR)
-    np.save("data/obs.npy", all_obs)
+            obs_t.append(Scaler_obs(oval, "", i, pos_obs(j), OERR))
+        all_obs.append(obs_t)
+    np.save("data/obs.npy", np.array(all_obs))
     return all_obs
 
 def init_background(settings):
@@ -58,7 +60,6 @@ def init_background(settings):
 def exec_assim_cycle(settings, all_fcst, all_obs):
     assert isinstance(settings, dict)
     assert all_fcst.shape == (STEPS, settings["k_ens"], N_MODEL)
-    assert all_obs.shape == (STEPS, P_OBS)
     all_back_cov = np.empty((STEPS, N_MODEL, N_MODEL))
     da_sys = Da_system(settings)
     try:
@@ -67,7 +68,7 @@ def exec_assim_cycle(settings, all_fcst, all_obs):
                 all_fcst[i, m, :] = Model().rk4(all_fcst[i - 1, m, :], DT)
             if i % AINT == 0:
                 all_back_cov[i, :, :] = get_back_cov(all_fcst[i, :, :])
-                all_fcst[i, :, :] = da_sys.analyze_one_window(all_fcst[i, :, :], all_obs[i, :])
+                all_fcst[i, :, :] = da_sys.analyze_one_window(all_fcst[i, :, :], all_obs[i])
     except (np.linalg.LinAlgError, ValueError) as e:
         print("ANALYSIS CYCLE DIVERGED: %s" % e)
         print("Settings: ", settings)
