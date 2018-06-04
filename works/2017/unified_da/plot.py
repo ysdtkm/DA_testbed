@@ -168,6 +168,7 @@ def plot_cov_corr(back_cov, name, k_ens):
         plt.close()
 
     ave_cov, ave_corr, rms_corr = reduce(back_cov)
+    np.save("data/mean_b_cov.npy", ave_cov)
     plot_matrix(ave_cov, "./image/%s/b_cov.pdf" % name, "background covariance")
     plot_matrix(ave_corr, "./image/%s/b_corr.pdf" % name, "mean background correlation", 1.0)
     plot_matrix(rms_corr, "./image/%s/b_rms_corr.pdf" % name, "RMS background correlation", 1.0)

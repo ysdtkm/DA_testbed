@@ -17,15 +17,16 @@ class Da_system:
 
     def analyze_one_window(self, fcst, obs, t_anl):
         assert fcst.shape == (AINT, self.k_ens, N_MODEL)
+        obs = list(chain.from_iterable(obs))
         if self.method == "letkf":
             assert self.k_ens > 1
-            anl = letkf(fcst, list(chain.from_iterable(obs)), self.rho, self.l_loc, t_anl)
+            anl = letkf(fcst, obs, self.rho, self.l_loc, t_anl)
         elif self.method == "tdvar":
             assert self.k_ens == 1
             raise Exception("da_system.py: 3D-Var is not implemented")
         elif self.method == "fdvar":
             assert self.k_ens == 1
-            anl = fdvar(fcst[0, 0, :], list(chain.from_iterable(obs)), self.amp_b, t_anl)[np.newaxis, :]
+            anl = fdvar(fcst[0, 0, :], obs, self.amp_b, t_anl)[np.newaxis, :]
         else:
             raise Exception(f"analysis method mis-specified: {self.settings['method']}")
         assert anl.shape == (self.k_ens, N_MODEL)

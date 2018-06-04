@@ -8,7 +8,7 @@ class Model:
         pass
 
     def rk4(self, x, dt):
-        assert isinstance(x, np.ndarray)
+        # assert isinstance(x, np.ndarray)
         assert isinstance(dt, float)
         assert dt > 0.0
         x0 = np.copy(x)

@@ -1,10 +1,13 @@
 #!/usr/bin/env python
 
+from functools import lru_cache, partial
 from scipy.optimize import fmin_bfgs
 import numpy as np
 from model import Model
 from const import N_MODEL, AINT, DT
 from obs import getr, get_background_obs
+import pickle
+from autograd import value_and_grad
 
 def fdvar(fcst_0, obs, sigma_b, t_end):
     assert isinstance(fcst_0, np.ndarray)
@@ -30,15 +33,35 @@ def fdvar_2j(anl_0, fcst_0, obs, sigma_b, t_end):
     r = getr(obs)
 
     b = sigma_b ** 2 * static_b()
-    traj = np.empty((AINT, 1, N_MODEL))
-    traj[0, 0, :] = anl_0[:, 0]
+    print(anl_0.shape)
+    traj = (anl_0[:, :].T)[np.newaxis, :, :]
     for i in range(1, AINT):
-        traj[i, 0, :] = Model().rk4(traj[i - 1, 0, :], DT)
+        next = Model().rk4(traj[i - 1, 0, :], DT)
+        traj = np.concatenate((traj, next[np.newaxis, np.newaxis, :]), axis=0)
+    assert traj.shape == (AINT, 1, N_MODEL)
     yb_raw = get_background_obs(obs, traj, t_end)
-    twoj = (anl_0 - fcst_0).T @ np.linalg.inv(b) @ (anl_0 - fcst_0) + \
-           (yb_raw - yo).T @ np.linalg.inv(r) @ (yb_raw - yo)
+    import pdb; pdb.set_trace()
+    twoj = np.dot((anl_0 - fcst_0).T, np.dot(np.linalg.inv(b), anl_0 - fcst_0)) + \
+           np.dot((yb_raw - yo).T, np.dot(np.linalg.inv(r), yb_raw - yo))
     assert twoj.shape == (1, 1)
     return twoj[0, 0]
 
+def test_fdvar_2j():
+    with open("args.pkl", "rb") as f:
+        anl_0, fcst_0, obs, sigma_b, t_end = pickle.load(f)
+    cf = partial(fdvar_2j, fcst_0=fcst_0, obs=obs, sigma_b=sigma_b, t_end=t_end)
+    cfg = value_and_grad(cf)
+    v, g = cfg(anl_0)
+    print(v, g)
+
+@lru_cache(maxsize=1)
 def static_b():
-    return np.identity(N_MODEL)
+    b = np.load("blob/mean_b_cov.npy")
+    assert b.shape == (N_MODEL, N_MODEL)
+    eigs = np.linalg.eigvalsh(b)
+    assert np.all(eigs > 0.0)
+    b /= np.max(eigs)
+    return b
+
+if __name__ == "__main__":
+    test_fdvar_2j()

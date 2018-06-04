@@ -35,12 +35,11 @@ def get_background_obs(obs, fcst, t_end):
     assert isinstance(obs, list)
     k_ens = fcst.shape[1]
     assert fcst.shape == (AINT, k_ens, N_MODEL)
-    yb_raw = np.empty((len(obs), k_ens))
+    yb_raw = np.empty((0, k_ens))
     for j in range(len(obs)):
         assert t_end - AINT < obs[j].time <= t_end
         it = obs[j].time - t_end + AINT - 1
         assert 0 <= it < AINT
-        for l in range(k_ens):
-            yb_raw[j, l] = fcst[it, l, obs[j].position]
+        yb_raw = np.concatenate((yb_raw[:, :], fcst[it, :, obs[j].position][np.newaxis, :]), axis=0)
     return yb_raw
 
