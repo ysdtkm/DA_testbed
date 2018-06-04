@@ -11,19 +11,23 @@
 #================================
 
 STEP_ALL = calc plot tex
-
-# time = time --format="spent %E sec"
-time =
+STEP_EXTENDED_ALL = $(STEP_ALL) prof
 
 src_calc = main.py const.py model.py da_system.py letkf.py obs.py
 dep_calc =
 out_calc = data/*.bin
-cmd_calc = find data -type f | xargs rm -f; mkdir -p data; $(time) python3 main.py
+cmd_calc = find data -type f | xargs rm -f; mkdir -p data; python3 main.py
+
+src_prof = $(src_calc)
+dep_prof =
+out_prof = $(out_calc) gprof.*
+cmd_prof = find data -type f | xargs rm -f; mkdir -p data; python3 -m cProfile -o gprof.out main.py && \
+           gprof2dot -f pstats -n 3 gprof.out > gprof.dot && dot gprof.dot -Tpdf > gprof.pdf && evince gprof.pdf
 
 src_plot = plot.py const.py
 dep_plot = calc
 out_plot = image/*
-cmd_plot = find image -type f | xargs rm -f; mkdir -p image; $(time) python3 plot.py
+cmd_plot = find image -type f | xargs rm -f; mkdir -p image; python3 plot.py
 
 src_tex = latex/write_tex.py
 dep_tex = plot
@@ -50,11 +54,10 @@ clean_$1:
 	rm -f $(VPATH)/$1
 endef
 
-# 第三要素の$i部分をSTEP_ALL変数の各要素で置換
-$(foreach i, $(STEP_ALL), $(eval $(call rule_comm,$i)))
+$(foreach i, $(STEP_EXTENDED_ALL), $(eval $(call rule_comm,$i)))
 
 clean:
-	rm -rf $(foreach i, $(STEP_ALL), $(out_$i))
+	rm -rf $(foreach i, $(STEP_EXTENDED_ALL), $(out_$i))
 	@rm -rf $(VPATH)
 
-.PHONY: all clean
+.PHONY: all clean prof
