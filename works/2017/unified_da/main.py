@@ -3,9 +3,9 @@
 import letkf
 import model
 from model import Model
-from obs import geth, getr
+from obs import geth, getr, Scaler_obs
 import numpy as np
-from const import EXPLIST, DT, STEPS, STEP_FREE, N_MODEL, P_OBS, FERR_INI, AINT, SEED
+from const import EXPLIST, DT, STEPS, STEP_FREE, N_MODEL, P_OBS, FERR_INI, AINT, SEED, pos_obs
 
 def main():
     np.random.seed(SEED * 1)
@@ -36,11 +36,13 @@ def exec_nature():
 def exec_obs(nature):
     assert isinstance(nature, np.ndarray)
     assert nature.shape == (STEPS, N_MODEL)
-    all_obs = np.empty((STEPS, P_OBS))
+    all_obs = np.empty((STEPS, P_OBS), dtype=object)
     h = geth()
     r = getr()
     for i in range(0, STEPS):
-        all_obs[i, :] = h.dot(nature[i, :]) + np.random.randn(P_OBS) * r.diagonal() ** 0.5
+        obs = h.dot(nature[i, :]) + np.random.randn(P_OBS) * r.diagonal() ** 0.5
+        for j in range(P_OBS):
+            all_obs[i, j] = Scaler_obs(obs[j], "", pos_obs(j), r.diagonal()[j] ** 0.5)
     np.save("data/obs.npy", all_obs)
     return all_obs
 
@@ -63,8 +65,6 @@ def exec_assim_cycle(settings, all_fcst, all_obs):
     h = geth()
     fcst = np.empty((settings["k_ens"], N_MODEL))
     all_back_cov = np.empty((STEPS, N_MODEL, N_MODEL))
-    obs_used = np.empty((STEPS, P_OBS))
-    obs_used[:, :] = np.nan
 
     # forecast-analysis cycle
     try:
@@ -72,10 +72,8 @@ def exec_assim_cycle(settings, all_fcst, all_obs):
             for m in range(0, settings["k_ens"]):
                 fcst[m, :] = Model().rk4(all_fcst[i - 1, m, :], DT)
             if i % AINT == 0:
-                obs_used[i, :] = all_obs[i, :]
                 all_back_cov[i, :, :] = get_back_cov(fcst)
-                fcst[:, :] = \
-                    analyze_one_window(fcst, all_obs[i, :], h, r, settings)
+                fcst[:, :] = analyze_one_window(fcst, all_obs[i, :], h, r, settings)
             all_fcst[i, :, :] = fcst[:, :]
 
     except (np.linalg.LinAlgError, ValueError) as e:
@@ -89,7 +87,6 @@ def exec_assim_cycle(settings, all_fcst, all_obs):
         print("")
 
     # save to files
-    np.save("data/%s_obs.npy" % settings["name"], obs_used)
     np.save("data/%s_cycle.npy" % settings["name"], all_fcst)
     np.save("data/%s_bcov.npy" % settings["name"], all_back_cov)
     return all_fcst
@@ -102,7 +99,9 @@ def analyze_one_window(fcst, obs, h, r, settings):
     assert r.shape == (P_OBS, P_OBS)
 
     anl = np.empty((settings["k_ens"], N_MODEL))
-    yo = obs[:, np.newaxis]
+    yo = np.empty((P_OBS, 1))
+    for j in range(P_OBS):
+        yo[j, 0] = obs[j].val
     if settings["method"] == "letkf":
         anl[:, :] = letkf.letkf(fcst[:, :], h[:, :], r[:, :], yo[:, :],
                                 settings["rho"], settings["k_ens"], settings["l_loc"])

@@ -6,8 +6,8 @@ from const import N_MODEL, P_OBS, pos_obs, OERR
 class Scaler_obs:
     def __init__(self, val, type, position, sigma_r):
         assert isinstance(val, float)
-        assert isinstance(type, string)
-        assert isinstance(position, [int, float])
+        assert isinstance(type, str)
+        assert isinstance(position, (int, float))
         assert isinstance(sigma_r, float)
         self.val = val
         self.type = type
