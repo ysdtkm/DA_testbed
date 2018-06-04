@@ -27,36 +27,30 @@ class Model:
         dx = (np.roll(x_in, -1) - np.roll(x_in, 2)) * np.roll(x_in, 1) - x_in + f
         return dx
 
+    def finite_time_tangent_using_nonlinear(self, x0, dt, iw):
+        assert isinstance(x0, np.ndarray)
+        assert isinstance(dt, float)
+        assert dt > 0.0
+        assert isinstance(iw, int)
+        assert iw > 0
+        m_finite = np.identity(N_MODEL)
+        eps = 1.0e-9
+        for j in range(N_MODEL):
+            xctl = np.copy(x0)
+            xptb = np.copy(x0)
+            xptb[j] += eps
+            for i in range(iw):
+                xctl = self.rk4(xctl, dt)
+                xptb = self.rk4(xptb, dt)
+            m_finite[:, j] = (xptb[:] - xctl[:]) / eps
+        return m_finite
 
-def finite_time_tangent_using_nonlinear(x0: np.ndarray, dt: float, iw: int) -> np.ndarray:
-    """
-    Return tangent linear matrix, calculated numerically using the NL model
-
-    :param x0: [N_MODEL] state vector at the beginning of the window
-    :param dt: length of a time step
-    :param iw: integration window (time in steps)
-    :return:   [N_MODEL,N_MODEL]
-    """
-
-    m_finite = np.identity(N_MODEL)
-    eps = 1.0e-9
-    for j in range(N_MODEL):
-        xctl = np.copy(x0)
-        xptb = np.copy(x0)
-        xptb[j] += eps
-        for i in range(iw):
-            xctl = rk4(xctl, dt)
-            xptb = rk4(xptb, dt)
-        m_finite[:, j] = (xptb[:] - xctl[:]) / eps
-    return m_finite
-
-
-def test_model():
-    x = np.random.randn(N_MODEL)
-    dt = 0.01
-    for i in range(100):
-        x = rk4(x, dt)
-    print(x)
+    def test_model(self):
+        x = np.random.randn(N_MODEL)
+        dt = 0.01
+        for i in range(100):
+            x = self.rk4(x, dt)
+        print(x)
 
 
 def dist(i1: int, i2: int) -> int:
@@ -96,4 +90,4 @@ def geth() -> np.ndarray:
 
 
 if __name__ == "__main__":
-    test_model()
+    Model().test_model()
