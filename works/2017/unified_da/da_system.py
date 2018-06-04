@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 
 import numpy as np
-from const import N_MODEL, P_OBS
+from const import N_MODEL
 import letkf
 
 class Da_system:

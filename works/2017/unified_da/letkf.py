@@ -2,13 +2,14 @@
 
 import numpy as np
 from scipy.linalg import sqrtm
-from const import N_MODEL, P_OBS
+from const import N_MODEL
 from obs import obs_within, dist, geth, getr
 
 def letkf(fcst, obs, rho, l_loc):
     k_ens = fcst.shape[0]
+    p_obs = obs.shape[0]
     assert fcst.shape == (k_ens, N_MODEL)
-    assert obs.shape == (P_OBS,)
+    assert obs.shape == (p_obs,)
     assert isinstance(rho, float)
     assert isinstance(k_ens, int)
     assert isinstance(l_loc, (int, float))
@@ -16,8 +17,8 @@ def letkf(fcst, obs, rho, l_loc):
     i_mm = np.identity(k_ens)
     i_1m = np.ones((1, k_ens))
 
-    yo = np.empty((P_OBS, 1))
-    for j in range(P_OBS):
+    yo = np.empty((p_obs, 1))
+    for j in range(p_obs):
         yo[j, 0] = obs[j].val
     h = geth(obs)
     r = getr(obs)
@@ -57,7 +58,6 @@ def get_localization_weight(ind, ic, length, obs):
     assert isinstance(ind, list)
     assert isinstance(ic, int)
     assert isinstance(length, (int, float))
-    assert obs.shape == (P_OBS,)
 
     def gc99(r):
         r = abs(r)
