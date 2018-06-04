@@ -17,8 +17,8 @@ def main():
     for settings in EXPLIST:
         print("Analysis cycle: %s" % settings["name"])
         np.random.seed(SEED * 4)
-        free = exec_free_run(settings)
-        anl = exec_assim_cycle(settings, free, obs)
+        fcst = init_background(settings)
+        anl = exec_assim_cycle(settings, fcst, obs)
 
 def exec_nature():
     all_true = np.empty((STEPS, N_MODEL))
@@ -45,7 +45,7 @@ def exec_obs(nature):
     np.save("data/obs.npy", all_obs)
     return all_obs
 
-def exec_free_run(settings):
+def init_background(settings):
     assert isinstance(settings, dict)
     free_run = np.empty((STEPS, settings["k_ens"], N_MODEL))
     for m in range(0, settings["k_ens"]):
@@ -59,13 +59,10 @@ def exec_assim_cycle(settings, all_fcst, all_obs):
     assert all_fcst.shape == (STEPS, settings["k_ens"], N_MODEL)
     assert all_obs.shape == (STEPS, P_OBS)
 
-    # prepare containers
     fcst = np.empty((settings["k_ens"], N_MODEL))
     all_back_cov = np.empty((STEPS, N_MODEL, N_MODEL))
-
     da_sys = Da_system(settings)
 
-    # forecast-analysis cycle
     try:
         for i in range(STEP_FREE, STEPS):
             for m in range(0, settings["k_ens"]):
@@ -74,18 +71,13 @@ def exec_assim_cycle(settings, all_fcst, all_obs):
                 all_back_cov[i, :, :] = get_back_cov(fcst)
                 fcst[:, :] = da_sys.analyze_one_window(fcst, all_obs[i, :])
             all_fcst[i, :, :] = fcst[:, :]
-
     except (np.linalg.LinAlgError, ValueError) as e:
         import traceback
-        print("")
         print("ANALYSIS CYCLE DIVERGED: %s" % e)
         print("Settings: ", settings)
         print("This experiment is terminated (see error traceback below). Continue on next experiments.")
-        print("")
         traceback.print_exc()
-        print("")
 
-    # save to files
     np.save("data/%s_cycle.npy" % settings["name"], all_fcst)
     np.save("data/%s_bcov.npy" % settings["name"], all_back_cov)
     return all_fcst

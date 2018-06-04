@@ -16,9 +16,16 @@ class Da_system:
     def analyze_one_window(self, fcst, obs):
         assert fcst.shape == (self.k_ens, N_MODEL)
         if self.method == "letkf":
+            assert self.k_ens > 1
             anl = letkf.letkf(fcst, obs, self.rho, self.l_loc)
+        elif self.method == "3dvar":
+            assert self.k_ens == 1
+            raise Exception("da_system.py: 4D-Var is not implemented")
+        elif self.method == "4dvar":
+            assert self.k_ens == 1
+            raise Exception("da_system.py: 4D-Var is not implemented")
         else:
-            raise Exception("analysis method mis-specified: %s" % self.settings["method"])
+            raise Exception(f"analysis method mis-specified: {self.settings['method']}")
         assert anl.shape == fcst.shape
         return anl[:, :]
 
