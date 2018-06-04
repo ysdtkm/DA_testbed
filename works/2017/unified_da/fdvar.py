@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 
 from functools import lru_cache, partial
-from scipy.optimize import fmin_bfgs
+from scipy.optimize import minimize
 import numpy as np
 from model import Model
 from const import N_MODEL, AINT, DT
@@ -15,7 +15,10 @@ def fdvar(fcst_0, obs, sigma_b, t_end):
 
     first_guess = np.copy(fcst_0)
     cf = partial(fdvar_2j, fcst_0=fcst_0, obs=obs, sigma_b=sigma_b, t_end=t_end)
-    anl_0 = fmin_bfgs(cf, first_guess, disp=True)
+    cfg = value_and_grad(cf)
+    opt = minimize(cfg, first_guess, method="bfgs", jac=True)
+    print(opt)
+    anl_0 = opt.x
     anl_1 = np.copy(anl_0)
     for i in range(AINT):
         anl_1 = Model().rk4(anl_1, DT)
