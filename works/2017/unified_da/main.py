@@ -60,6 +60,7 @@ def init_background(settings):
 def exec_assim_cycle(settings, all_fcst, all_obs):
     assert isinstance(settings, dict)
     assert all_fcst.shape == (STEPS, settings["k_ens"], N_MODEL)
+    assert len(all_obs) == STEPS
     all_back_cov = np.empty((STEPS, N_MODEL, N_MODEL))
     da_sys = Da_system(settings)
     try:
@@ -68,7 +69,8 @@ def exec_assim_cycle(settings, all_fcst, all_obs):
                 all_fcst[i, m, :] = Model().rk4(all_fcst[i - 1, m, :], DT)
             if i % AINT == 0:
                 all_back_cov[i, :, :] = get_back_cov(all_fcst[i, :, :])
-                all_fcst[i, :, :] = da_sys.analyze_one_window(all_fcst[i, :, :], all_obs[i])
+                all_fcst[i, :, :] = da_sys.analyze_one_window(
+                    all_fcst[i - AINT + 1:i + 1, :, :], all_obs[i - AINT + 1:i + 1], i)
     except (np.linalg.LinAlgError, ValueError) as e:
         print("ANALYSIS CYCLE DIVERGED: %s" % e)
         print("Settings: ", settings)
