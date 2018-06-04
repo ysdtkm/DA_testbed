@@ -33,14 +33,12 @@ def fdvar_2j(anl_0, fcst_0, obs, sigma_b, t_end):
     r = getr(obs)
 
     b = sigma_b ** 2 * static_b()
-    print(anl_0.shape)
     traj = (anl_0[:, :].T)[np.newaxis, :, :]
     for i in range(1, AINT):
         next = Model().rk4(traj[i - 1, 0, :], DT)
         traj = np.concatenate((traj, next[np.newaxis, np.newaxis, :]), axis=0)
     assert traj.shape == (AINT, 1, N_MODEL)
     yb_raw = get_background_obs(obs, traj, t_end)
-    import pdb; pdb.set_trace()
     twoj = np.dot((anl_0 - fcst_0).T, np.dot(np.linalg.inv(b), anl_0 - fcst_0)) + \
            np.dot((yb_raw - yo).T, np.dot(np.linalg.inv(r), yb_raw - yo))
     assert twoj.shape == (1, 1)

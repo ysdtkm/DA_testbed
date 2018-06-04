@@ -11,14 +11,15 @@ STEPS = int(TMAX / DT)
 STEP_FREE = STEPS // 4
 FCST_LT = 0
 
-OERR = 0.5
+OERR = 0.1
 FERR_INI = 10.0
 AINT = 3
 SEED = 10 ** 8 + 7
 
 EXPLIST = [
-    dict(name="fdvar-3_0", method="fdvar", rho=None, k_ens=1, l_loc=None, amp_b=3.0),
-    dict(name="fdvar-1_0", method="fdvar", rho=None, k_ens=1, l_loc=None, amp_b=1.0),
+    dict(name="fdvar-0_3", method="fdvar", rho=None, k_ens=1, l_loc=None, amp_b=0.3),
+    dict(name="fdvar-0_2", method="fdvar", rho=None, k_ens=1, l_loc=None, amp_b=0.2),
+    dict(name="fdvar-0_1", method="fdvar", rho=None, k_ens=1, l_loc=None, amp_b=0.1),
     dict(name="letkf", method="letkf", rho=1.2, k_ens=21, l_loc=10, amp_b=None),
 ]
 
