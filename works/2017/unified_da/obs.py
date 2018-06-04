@@ -40,3 +40,11 @@ def geth(obs):
         assert isinstance(i, int)
         h[j, i] = 1.0
     return h
+
+def getr(obs):
+    assert obs.shape == (P_OBS,)
+    assert isinstance(obs[0], Scaler_obs)
+    r = np.zeros((P_OBS, P_OBS))
+    for j in range(P_OBS):
+        r[j, j] = obs[j].sigma_r ** 2
+    return r

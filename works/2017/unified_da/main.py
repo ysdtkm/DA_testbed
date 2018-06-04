@@ -3,7 +3,7 @@
 import letkf
 import model
 from model import Model
-from obs import geth, Scaler_obs
+from obs import Scaler_obs
 import numpy as np
 from const import EXPLIST, DT, STEPS, STEP_FREE, N_MODEL, P_OBS, OERR, FERR_INI, AINT, SEED, pos_obs
 
@@ -93,16 +93,9 @@ def analyze_one_window(fcst, obs, settings):
     assert fcst.shape == (settings["k_ens"], N_MODEL)
     assert obs.shape == (P_OBS,)
 
-    h = geth(obs)
-    r = np.identity(P_OBS) * OERR ** 2
-    anl = np.empty((settings["k_ens"], N_MODEL))
-    yo = np.empty((P_OBS, 1))
-    for j in range(P_OBS):
-        yo[j, 0] = obs[j].val
-
     if settings["method"] == "letkf":
-        anl[:, :] = letkf.letkf(fcst[:, :], h[:, :], r[:, :], yo[:, :],
-                                settings["rho"], settings["k_ens"], settings["l_loc"])
+        anl = letkf.letkf(fcst, obs, settings["rho"], settings["k_ens"], settings["l_loc"])
+        assert anl.shape == (settings["k_ens"], N_MODEL)
     else:
         raise Exception("analysis method mis-specified: %s" % settings["method"])
     return anl[:, :]

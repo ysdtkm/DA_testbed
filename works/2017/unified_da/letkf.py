@@ -3,19 +3,23 @@
 import numpy as np
 from scipy.linalg import sqrtm
 from const import N_MODEL, P_OBS, pos_obs
-from obs import obs_within, dist
+from obs import obs_within, dist, geth, getr
 
-def letkf(fcst, h, r, yo, rho, k_ens, l_loc):
+def letkf(fcst, obs, rho, k_ens, l_loc):
     assert fcst.shape == (k_ens, N_MODEL)
-    assert h.shape == (P_OBS, N_MODEL)
-    assert r.shape == (P_OBS, P_OBS)
-    assert yo.shape == (P_OBS, 1)
+    assert obs.shape == (P_OBS,)
     assert isinstance(rho, float)
     assert isinstance(k_ens, int)
     assert isinstance(l_loc, (int, float))
 
     i_mm = np.identity(k_ens)
     i_1m = np.ones((1, k_ens))
+
+    yo = np.empty((P_OBS, 1))
+    for j in range(P_OBS):
+        yo[j, 0] = obs[j].val
+    h = geth(obs)
+    r = getr(obs)
 
     xfm = fcst[:, :].T
     xf = np.mean(xfm, axis=1)[:, np.newaxis]
