@@ -59,10 +59,8 @@ def exec_assim_cycle(settings, all_fcst, all_obs):
     assert isinstance(settings, dict)
     assert all_fcst.shape == (STEPS, settings["k_ens"], N_MODEL)
     assert all_obs.shape == (STEPS, P_OBS)
-
     all_back_cov = np.empty((STEPS, N_MODEL, N_MODEL))
     da_sys = Da_system(settings)
-
     try:
         for i in range(STEP_FREE, STEPS):
             for m in range(0, settings["k_ens"]):
@@ -74,7 +72,6 @@ def exec_assim_cycle(settings, all_fcst, all_obs):
         print("ANALYSIS CYCLE DIVERGED: %s" % e)
         print("Settings: ", settings)
         traceback.print_exc()
-
     np.save("data/%s_cycle.npy" % settings["name"], all_fcst)
     np.save("data/%s_bcov.npy" % settings["name"], all_back_cov)
     return all_fcst
