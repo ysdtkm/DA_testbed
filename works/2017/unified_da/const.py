@@ -6,7 +6,7 @@ N_MODEL = 20  # dimension of model variable
 P_OBS = N_MODEL  # dimension of observation
 
 DT = 0.05
-TMAX = 3
+TMAX = 1
 STEPS = int(TMAX / DT)
 STEP_FREE = STEPS // 4
 FCST_LT = 0
@@ -14,7 +14,7 @@ FCST_LT = 0
 OERR = 0.1
 FERR_INI = 10.0
 AINT = 2
-SEED = 10 ** 8 + 7
+SEED = 10 ** 6 + 3
 
 EXPLIST = [
     dict(name="fdvar-0_5", method="fdvar", rho=None, k_ens=1, l_loc=None, amp_b=0.5),
