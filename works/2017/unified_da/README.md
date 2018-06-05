@@ -19,4 +19,4 @@ evince image/merged.pdf
 * const: Run-time settings
 
 ## Todo
-* Better modularbility by OOP
+* None
