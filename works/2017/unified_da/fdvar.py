@@ -2,12 +2,10 @@
 
 from functools import lru_cache, partial
 from scipy.optimize import minimize
-import autograd.numpy as np
+import numpy as np
 from model import Model
 from const import N_MODEL, AINT, DT
 from obs import getr, get_background_obs
-import pickle
-from autograd import value_and_grad
 
 def fdvar(fcst_0, obs, sigma_b, t_end):
     assert isinstance(fcst_0, np.ndarray)
@@ -18,9 +16,7 @@ def fdvar(fcst_0, obs, sigma_b, t_end):
 
     first_guess = np.copy(fcst_0)
     cf = partial(fdvar_2j, fcst_0=fcst_0, obs=obs, r_inv=r_inv, b_inv=b_inv, t_end=t_end)
-    cfg = value_and_grad(cf)
-    # opt = minimize(cf, first_guess, method="bfgs")
-    opt = minimize(cfg, first_guess, method="cg", jac=True)
+    opt = minimize(cf, first_guess, method="bfgs")
     print(opt.message)
     anl_0 = opt.x
     anl_1 = np.copy(anl_0)
@@ -37,7 +33,7 @@ def fdvar_2j(anl_0, fcst_0, obs, r_inv, b_inv, t_end):
     for j in range(p_obs):
         assert t_end - AINT < obs[j].time <= t_end
         yo[j, 0] = obs[j].val
-    traj = (anl_0[:, :].T)[np.newaxis, :, :]
+    traj = Model().rk4(anl_0[:, 0], DT)[np.newaxis, np.newaxis, :]
     for i in range(1, AINT):
         next = Model().rk4(traj[i - 1, 0, :], DT)
         traj = np.concatenate((traj, next[np.newaxis, np.newaxis, :]), axis=0)
@@ -48,14 +44,6 @@ def fdvar_2j(anl_0, fcst_0, obs, r_inv, b_inv, t_end):
     assert twoj.shape == (1, 1)
     return twoj[0, 0]
 
-def test_fdvar_2j():
-    with open("args.pkl", "rb") as f:
-        anl_0, fcst_0, obs, sigma_b, t_end = pickle.load(f)
-    cf = partial(fdvar_2j, fcst_0=fcst_0, obs=obs, sigma_b=sigma_b, t_end=t_end)
-    cfg = value_and_grad(cf)
-    v, g = cfg(anl_0)
-    print(v, g)
-
 @lru_cache(maxsize=1)
 def static_b():
     b = np.load("blob/mean_b_cov.npy")
@@ -65,5 +53,3 @@ def static_b():
     b /= np.max(eigs)
     return b
 
-if __name__ == "__main__":
-    test_fdvar_2j()
