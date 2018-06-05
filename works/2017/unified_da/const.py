@@ -13,12 +13,11 @@ FCST_LT = 0
 
 OERR = 0.1
 FERR_INI = 10.0
-AINT = 2
 SEED = 10 ** 6 + 3
 
 EXPLIST = [
-    dict(name="fdvar-0_5", method="fdvar", rho=None, k_ens=1, l_loc=None, amp_b=0.5),
-    dict(name="letkf", method="letkf", rho=1.2, k_ens=21, l_loc=10, amp_b=None),
+    dict(name="fdvar-0_5", method="fdvar", rho=None, k_ens=1, l_loc=None, amp_b=0.5, aint=2),
+    dict(name="letkf", method="letkf", rho=1.2, k_ens=21, l_loc=10, amp_b=None, aint=2),
 ]
 
 def pos_obs(j):

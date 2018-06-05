@@ -5,7 +5,7 @@ import model
 from model import Model
 from obs import Scaler_obs
 import numpy as np
-from const import EXPLIST, DT, STEPS, STEP_FREE, N_MODEL, P_OBS, OERR, FERR_INI, AINT, SEED, pos_obs
+from const import EXPLIST, DT, STEPS, STEP_FREE, N_MODEL, P_OBS, OERR, FERR_INI, SEED, pos_obs
 from da_system import Da_system
 
 def main():
@@ -63,14 +63,16 @@ def exec_assim_cycle(settings, all_fcst, all_obs):
     assert len(all_obs) == STEPS
     all_back_cov = np.empty((STEPS, N_MODEL, N_MODEL))
     da_sys = Da_system(settings)
+    aint = settings["aint"]
     try:
         for i in range(STEP_FREE, STEPS):
             for m in range(0, settings["k_ens"]):
                 all_fcst[i, m, :] = Model().rk4(all_fcst[i - 1, m, :], DT)
-            if i % AINT == 0:
+            if i % aint == 0:
                 all_back_cov[i, :, :] = get_back_cov(all_fcst[i, :, :])
                 all_fcst[i, :, :] = da_sys.analyze_one_window(
-                    all_fcst[i - AINT + 1:i + 1, :, :], all_obs[i - AINT + 1:i + 1], i)
+                    all_fcst[i - aint + 1:i + 1, :, :],
+                    all_obs[i - aint + 1:i + 1], i, aint)
     except (np.linalg.LinAlgError, ValueError) as e:
         print("ANALYSIS CYCLE DIVERGED: %s" % e)
         print("Settings: ", settings)

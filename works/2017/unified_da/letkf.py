@@ -2,14 +2,14 @@
 
 import numpy as np
 from scipy.linalg import sqrtm
-from const import N_MODEL, AINT
+from const import N_MODEL
 from obs import dist, getr, get_background_obs
 
-def letkf(fcst, obs, rho, l_loc, t_end):
+def letkf(fcst, obs, rho, l_loc, t_end, aint):
     k_ens = fcst.shape[1]
     assert isinstance(obs, list)
     p_obs = len(obs)
-    assert fcst.shape == (AINT, k_ens, N_MODEL)
+    assert fcst.shape == (aint, k_ens, N_MODEL)
     assert isinstance(rho, float)
     assert isinstance(k_ens, int)
     assert isinstance(l_loc, (int, float))
@@ -20,14 +20,14 @@ def letkf(fcst, obs, rho, l_loc, t_end):
 
     yo = np.empty((p_obs, 1))
     for j in range(p_obs):
-        assert t_end - AINT < obs[j].time <= t_end
+        assert t_end - aint < obs[j].time <= t_end
         yo[j, 0] = obs[j].val
     r = getr(obs)
 
     xf_raw = fcst[-1, :, :].T
     xf = np.mean(xf_raw, axis=1)[:, np.newaxis]
     xfpt = xf_raw - xf @ i_1m
-    yb_raw = get_background_obs(obs, fcst, t_end)
+    yb_raw = get_background_obs(obs, fcst, t_end, aint)
     yb = np.mean(yb_raw, axis=1)[:, np.newaxis]
     ybpt = yb_raw[:, :] - yb[:, :]
 
