@@ -1,6 +1,8 @@
 # DA_testbed for quick prototyping
 
 ## How to use
+* This repository should only have core features. Each experiments should be conducted after folking/branching this repository.
+
 ```bash
 make
 evince image/merged.pdf
