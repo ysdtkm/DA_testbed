@@ -1,4 +1,4 @@
-# unified_da
+# DA_testbed for quick prototyping
 
 ## How to use
 ```bash
@@ -18,5 +18,3 @@ evince image/merged.pdf
 * plot: all visualization functions. Read **data/** and write **image/**
 * const: Run-time settings
 
-## Todo
-* None
