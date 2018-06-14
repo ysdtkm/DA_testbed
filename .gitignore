@@ -2,6 +2,7 @@
 *.bin
 *.png
 *.pdf
+*.npy
 __pycache__/
 *.txt
 

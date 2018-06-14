@@ -6,6 +6,7 @@ from const import N_MODEL
 from obs import dist, getr, get_background_obs, Scaler_obs
 
 def ensrf_all(fcst, obs, rho, t_end, aint):
+    # 4D-EnSRF with no localization
     anl = apply_multiplicative_infl(fcst, rho)
     for o in obs:
         anl = ensrf_single(anl, o, t_end, aint)
@@ -19,6 +20,7 @@ def ensrf_single(fcst, obs, t_end, aint):
     assert isinstance(k_ens, int)
     assert isinstance(t_end, int)
 
+    assert t_end - aint < obs.time <= t_end
     yo = np.empty((1, 1))
     yo[0, 0] = obs.val
     R = getr([obs])
@@ -51,6 +53,5 @@ def apply_multiplicative_infl(fcst, rho):
     aint, k_ens, _ = fcst.shape
     assert fcst.shape == (aint, k_ens, N_MODEL)
     ptb = fcst - np.mean(fcst, axis=1)[:, None, :]
-    assert np.allclose(fcst, np.mean(fcst, axis=1)[:, None, :] + ptb)
     return np.mean(fcst, axis=1)[:, None, :] + ptb * rho ** 0.5
 
