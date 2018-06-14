@@ -1,6 +1,8 @@
 digraph {
     letkf -> obs;
     letkf -> const;
+    ensrf -> obs;
+    ensrf -> const;
     main -> const;
     main -> model;
     main -> da_system;
@@ -9,6 +11,7 @@ digraph {
     plot -> const;
     da_system -> const;
     da_system -> letkf;
+    da_system -> ensrf;
     da_system -> fdvar;
     obs -> const;
     fdvar -> model;
