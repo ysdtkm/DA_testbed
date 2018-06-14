@@ -13,7 +13,7 @@
 STEP_ALL = calc plot tex
 STEP_EXTENDED_ALL = $(STEP_ALL) prof
 
-src_calc = main.py const.py model.py da_system.py letkf.py obs.py fdvar.py
+src_calc = main.py const.py model.py da_system.py ensrf.py letkf.py obs.py fdvar.py
 dep_calc =
 out_calc = data/*.bin
 cmd_calc = find data -type f | xargs rm -f; mkdir -p data; python3 main.py
@@ -29,10 +29,10 @@ dep_plot = calc
 out_plot = image/*
 cmd_plot = find image -type f | xargs rm -f; mkdir -p image; python3 plot.py
 
-src_tex = latex/write_tex.py
+src_tex =
 dep_tex = plot
 out_tex =
-cmd_tex = cd latex && python3 write_tex.py
+cmd_tex = python3 ~/repos/works/2018/dir_to_latex/main.py image
 
 # ===============================================
 # end of settings
