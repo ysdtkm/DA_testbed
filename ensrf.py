@@ -6,17 +6,16 @@ from const import N_MODEL
 from obs import dist, getr, get_background_obs, Scaler_obs
 
 def ensrf_all(fcst, obs, rho, t_end, aint):
-    anl = np.copy(fcst)
+    anl = apply_multiplicative_infl(fcst, rho)
     for o in obs:
-        anl = ensrf_single(anl, o, rho, t_end, aint)
+        anl = ensrf_single(anl, o, t_end, aint)
     assert anl.shape == fcst.shape
     return anl[-1, :, :]
 
-def ensrf_single(fcst, obs, rho, t_end, aint):
-    k_ens = fcst.shape[1]
+def ensrf_single(fcst, obs, t_end, aint):
     assert isinstance(obs, Scaler_obs)
+    k_ens = fcst.shape[1]
     assert fcst.shape == (aint, k_ens, N_MODEL)
-    assert isinstance(rho, float)
     assert isinstance(k_ens, int)
     assert isinstance(t_end, int)
 
@@ -33,13 +32,13 @@ def ensrf_single(fcst, obs, rho, t_end, aint):
 
     x_mean = np.mean(X_raw, axis=1)[:, None]
     X_ptb = X_raw - x_mean
-    Ef = (1.0 + rho) / (k_ens - 1.0) ** 0.5 * X_ptb
+    Ef = (k_ens - 1.0) ** (-0.5) * X_ptb
     yb_mean = np.mean(yb_raw, axis=1)[:, None]
-    Yb_ptb = yb_raw - yb_mean
-    K = Ef @ Yb_ptb.T @ inv(Yb_ptb @ Yb_ptb.T + R)
+    HEf = (k_ens - 1.0) ** (-0.5) * (yb_raw - yb_mean)
+    K = Ef @ HEf.T @ inv(HEf @ HEf.T + R)
     xa_mean = x_mean + K @ (yo - yb_mean)
-    alpha = (1.0 + (R[0, 0] / ((Yb_ptb @ Yb_ptb.T) + R[0, 0])) ** 0.5) ** (-1)
-    Ea = Ef - alpha * K @ Yb_ptb
+    alpha = (1.0 + (R[0, 0] / ((HEf @ HEf.T) + R[0, 0])) ** 0.5) ** (-1)
+    Ea = (k_ens - 1.0) ** 0.5 * (Ef - alpha * K @ HEf)
     Xa = Ea + xa_mean
     assert Xa.shape == (aint * N_MODEL, k_ens)
 
@@ -47,3 +46,11 @@ def ensrf_single(fcst, obs, rho, t_end, aint):
     for t in range(aint):
         anl[t, :, :] = Xa[t * N_MODEL:(t + 1) * N_MODEL, :].T
     return anl
+
+def apply_multiplicative_infl(fcst, rho):
+    aint, k_ens, _ = fcst.shape
+    assert fcst.shape == (aint, k_ens, N_MODEL)
+    ptb = fcst - np.mean(fcst, axis=1)[:, None, :]
+    assert np.allclose(fcst, np.mean(fcst, axis=1)[:, None, :] + ptb)
+    return np.mean(fcst, axis=1)[:, None, :] + ptb * rho ** 0.5
+
