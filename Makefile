@@ -29,10 +29,10 @@ dep_plot = calc
 out_plot = image/*
 cmd_plot = find image -type f | xargs rm -f; mkdir -p image; python3 plot.py
 
-src_tex = latex/write_tex.py
+src_tex =
 dep_tex = plot
 out_tex =
-cmd_tex = cd latex && python3 write_tex.py
+cmd_tex = python3 ~/repos/works/2018/dir_to_latex/main.py image
 
 # ===============================================
 # end of settings

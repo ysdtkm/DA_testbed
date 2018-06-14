@@ -1,7 +1,9 @@
 .idea/
 *.bin
 *.png
+*.npy
 *.pdf
 __pycache__/
 *.txt
+.make/
 
