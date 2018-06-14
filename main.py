@@ -1,12 +1,13 @@
 #!/usr/bin/env python
 
+import sys
 import traceback
-import model
-from model import Model
+from model import model_step
 from obs import Scaler_obs
 import numpy as np
 from const import EXPLIST, DT, STEPS, STEP_FREE, N_MODEL, P_OBS, OERR, FERR_INI, SEED, pos_obs
 from da_system import Da_system
+from tqdm import trange
 
 def main():
     np.random.seed(SEED * 1)
@@ -27,7 +28,7 @@ def exec_nature():
 
     # forward integration i-1 -> i
     for i in range(0, STEPS):
-        true[:] = Model().rk4(true[:], DT)
+        true[:] = model_step(true[:], DT)
         all_true[i, :] = true[:]
     np.save("data/true.npy", all_true)
 
@@ -54,7 +55,7 @@ def init_background(settings):
     for m in range(0, settings["k_ens"]):
         free_run[0, m, :] = np.random.randn(N_MODEL) * FERR_INI
         for i in range(1, STEP_FREE):
-            free_run[i, m, :] = Model().rk4(free_run[i - 1, m, :], DT)
+            free_run[i, m, :] = model_step(free_run[i - 1, m, :], DT)
     return free_run
 
 def exec_assim_cycle(settings, all_fcst, all_obs):
@@ -65,9 +66,9 @@ def exec_assim_cycle(settings, all_fcst, all_obs):
     da_sys = Da_system(settings)
     aint = settings["aint"]
     try:
-        for i in range(STEP_FREE, STEPS):
+        for i in trange(STEP_FREE, STEPS, desc=settings["name"], ascii=True, disable=(not sys.stdout.isatty())):
             for m in range(0, settings["k_ens"]):
-                all_fcst[i, m, :] = Model().rk4(all_fcst[i - 1, m, :], DT)
+                all_fcst[i, m, :] = model_step(all_fcst[i - 1, m, :], DT)
             if i % aint == 0:
                 all_back_cov[i, :, :] = get_back_cov(all_fcst[i, :, :])
                 all_fcst[i, :, :] = da_sys.analyze_one_window(

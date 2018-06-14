@@ -4,7 +4,6 @@ from itertools import chain
 import numpy as np
 from const import N_MODEL
 from letkf import letkf
-from fdvar import fdvar
 
 class Da_system:
     def __init__(self, settings):
@@ -26,9 +25,10 @@ class Da_system:
             raise Exception("da_system.py: 3D-Var is not implemented")
         elif self.method == "fdvar":
             assert self.k_ens == 1
-            anl = fdvar(fcst[0, 0, :], obs, self.amp_b, t_anl, aint)[np.newaxis, :]
+            raise Exception("da_system.py: 4D-Var is not implemented")
         else:
             raise Exception(f"analysis method mis-specified: {self.settings['method']}")
+
         assert anl.shape == (self.k_ens, N_MODEL)
         return anl
 
