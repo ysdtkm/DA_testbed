@@ -24,9 +24,8 @@ EXPLIST = [
 ]
 
 def pos_obs(j):
-    # return model grid i of j-th observation
     assert isinstance(j, int)
     assert P_OBS > 0
-    return j * (N_MODEL // P_OBS)
+    return j * (N_MODEL // 2 // P_OBS)
 
 

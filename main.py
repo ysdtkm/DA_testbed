@@ -3,7 +3,7 @@
 import sys
 import traceback
 from model import model_step
-from obs import Scaler_obs
+from obs import Scaler_obs, generate_single_obs
 import numpy as np
 from const import EXPLIST, DT, STEPS, STEP_FREE, N_MODEL, P_OBS, OERR, FERR_INI, SEED, pos_obs
 from da_system import Da_system
@@ -43,8 +43,8 @@ def exec_obs(nature):
         obs_t = []
         for j in range(P_OBS):
             k = pos_obs(j)
-            oval = nature[i, k] + np.random.randn(1)[0] * OERR
-            obs_t.append(Scaler_obs(oval, "", i, pos_obs(j), OERR))
+            o = generate_single_obs(nature[i, :], k, OERR, i)
+            obs_t.append(o)
         all_obs.append(obs_t)
     np.save("data/obs.npy", np.array(all_obs))
     return all_obs
