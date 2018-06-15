@@ -37,13 +37,15 @@ def getr(obs):
 def get_background_obs(obs, fcst, t_end, aint):
     assert isinstance(obs, list)
     k_ens = fcst.shape[1]
+    p_obs = len(obs)
     assert fcst.shape == (aint, k_ens, N_MODEL)
-    yb_raw = np.empty((0, k_ens))
-    for j in range(len(obs)):
-        assert t_end - aint < obs[j].time <= t_end
-        it = obs[j].time - t_end + aint - 1
+    yb_raw = np.empty((p_obs, k_ens))
+    for j, o in enumerate(obs):
+        assert t_end - aint < o.time <= t_end
+        it = o.time - t_end + aint - 1
         assert 0 <= it < aint
-        yb_raw = np.concatenate((yb_raw[:, :], fcst[it, :, obs[j].position][np.newaxis, :]), axis=0)
+        for i in range(k_ens):
+            yb_raw[j, i] = generate_single_obs(fcst[it, i, :], o.position, 0.0, o.time).val
     return yb_raw
 
 def generate_single_obs(x, position, sigma_r, time):

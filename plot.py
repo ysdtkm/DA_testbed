@@ -95,7 +95,7 @@ def plot_diff_ens_mean(hist_true, hist_fcst, name):
     error = hist_fcst_mean - hist_true
 
     cm = plt.imshow(error, cmap=plt.cm.RdBu_r, aspect="auto")
-    cm.set_clim(-1.0, 1.0)
+    cm.set_clim(-5.0, 5.0)
     cb = plt.colorbar(cm)
 
     plt.xlabel("grid")
