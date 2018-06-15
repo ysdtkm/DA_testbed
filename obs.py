@@ -16,6 +16,9 @@ class Scaler_obs:
         self.position = position
         self.sigma_r = sigma_r
 
+    def __str__(self):
+        return f"val: {self.val}\ntype: {self.type}\nposition: {self.position}\nsigma_r: {self.sigma_r}"
+
 def dist(i1, i2):
     assert isinstance(i1, int)
     assert isinstance(i2, int)
@@ -43,3 +46,22 @@ def get_background_obs(obs, fcst, t_end, aint):
         yb_raw = np.concatenate((yb_raw[:, :], fcst[it, :, obs[j].position][np.newaxis, :]), axis=0)
     return yb_raw
 
+def generate_single_obs(x, position, sigma_r, time):
+    # model must be a model of Dirren and Hakim
+    assert x.shape == (N_MODEL,)
+    assert isinstance(position, int)
+    assert 0 <= position < N_MODEL // 2
+    model_state = x[position] + x[position + N_MODEL // 2]
+    obs = Scaler_obs(model_state + np.random.randn() * sigma_r, "Dirren", time, position, sigma_r)
+    return obs
+
+def test_single_obs():
+    x = np.random.randn(N_MODEL)
+    position = np.random.randint(N_MODEL // 2)
+    sigma_r = 1.0
+    time = 10
+    obs = generate_single_obs(x, position, sigma_r, time)
+    print(obs)
+
+if __name__ == "__main__":
+    pass
