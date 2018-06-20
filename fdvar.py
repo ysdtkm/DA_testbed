@@ -18,7 +18,7 @@ def fdvar(fcst_0, obs, sigma_b, t_end, aint):
     cf = partial(fdvar_2j, fcst_0=fcst_0, obs=obs, r_inv=r_inv, b_inv=b_inv,
             t_end=t_end, aint=aint)
     opt = minimize(cf, first_guess, method="bfgs")
-    print(opt.message)
+    # print(opt.message)
     anl_0 = opt.x
     anl_1 = np.copy(anl_0)
     for i in range(aint):
