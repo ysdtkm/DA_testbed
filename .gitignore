@@ -5,4 +5,5 @@
 *.npy
 __pycache__/
 *.txt
+tags
 
