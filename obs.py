@@ -57,13 +57,5 @@ def generate_single_obs(x, position, sigma_r, time):
     obs = Scaler_obs(model_state + np.random.randn() * sigma_r, "Dirren", time, position, sigma_r)
     return obs
 
-def test_single_obs():
-    x = np.random.randn(N_MODEL)
-    position = np.random.randint(N_MODEL // 2)
-    sigma_r = 1.0
-    time = 10
-    obs = generate_single_obs(x, position, sigma_r, time)
-    print(obs)
-
 if __name__ == "__main__":
     pass
