@@ -45,12 +45,3 @@ class Model:
             m_finite[:, j] = (xptb[:] - xctl[:]) / eps
         return m_finite
 
-    def test_model(self):
-        x = np.random.randn(N_MODEL)
-        dt = 0.01
-        for i in range(100):
-            x = self.rk4(x, dt)
-        print(x)
-
-if __name__ == "__main__":
-    Model().test_model()
