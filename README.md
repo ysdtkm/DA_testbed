@@ -21,3 +21,7 @@ evince image/merged.pdf
 * plot: all visualization functions. Read **data/** and write **image/**
 * const: Run-time settings
 
+## Programming paradigm
+* Single-process
+* Numpy, Numba for acceleration
+* Multiple experiments should be externally wrapped with https://github.com/ysdtkm/all-in-one/tree/master/works/2018/parallel_wrapper
