@@ -23,5 +23,5 @@ evince image/merged.pdf
 
 ## Programming paradigm
 * Single-process
-* Numpy, Numba for acceleration
-* Multiple experiments should be externally wrapped with https://github.com/ysdtkm/all-in-one/tree/master/works/2018/parallel_wrapper
+    * Multiple experiments should be externally wrapped with https://github.com/ysdtkm/all-in-one/tree/master/works/2018/parallel_wrapper
+* Numpy, Numba for acceleration. No use of ctypes/f2py
