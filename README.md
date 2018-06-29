@@ -12,7 +12,7 @@ evince image/merged.pdf
 <img src="documentation/graph.png">
 
 * main: run nature run, observation, and DA cycle. Output is saved at **data/**
-* da_system: wrapper for DA algorithms. One DA window can take observations at t in (t_s, t_e].
+* da_system: wrapper for DA algorithms. It can deal 3D/4D-DA and deterministic/ensemble DA.
 * letkf: LETKF core programs
 * fdvar: 4D-Var core programs
 * model: model integration and TLM
