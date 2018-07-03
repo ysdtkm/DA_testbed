@@ -2,7 +2,7 @@
 
 import numpy as np
 import numba
-from const import N_MODEL
+from const import N_MODEL, DT
 
 class Model:
     def __init__(self):
@@ -28,6 +28,17 @@ class Model:
                 xptb = self.rk4(xptb, dt)
             m_finite[:, j] = (xptb[:] - xctl[:]) / eps
         return m_finite
+
+    @classmethod
+    def sample_state(cls):
+        tmp = np.random.get_state()
+        np.random.seed(0)
+        x = np.random.randn(N_MODEL)
+        np.random.set_state(tmp)
+        for i in range(1000):
+            x = step(x, DT)
+        return x
+
 
 @numba.jit("f8[:](f8[:])", nopython=True)
 def tendency(x_in):

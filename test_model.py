@@ -27,12 +27,10 @@ class TestModel(unittest.TestCase):
             for i in range(int(t / dt)):
                 x = m.rk4(x, dt)
             return x
-
         t = 1.0
         dt_true = 0.001
         dt_list = [0.002, 0.005, 0.01, 0.02, 0.05, 0.1]
-        np.random.seed(0)
-        x = np.random.randn(N_MODEL)
+        x = Model.sample_state()
         rmse_all = []
         for dt in dt_list:
             x_true = evolve(x, t, dt_true)
