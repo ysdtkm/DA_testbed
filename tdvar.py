@@ -33,8 +33,9 @@ def tdvar_analytic(fcst, obs, sigma_b, t_anl):
     b_inv = np.linalg.inv(sigma_b ** 2 * static_b())
     h = get_h_matrix(obs)
     delta_x = np.linalg.inv(b_inv + h.T @ r_inv @ h) @ h.T @ r_inv @ d
-    anl = fcst + delta_x
-    return anl
+    anl = fcst[:, None] + delta_x
+    assert anl.shape == (N_MODEL, 1)
+    return anl[:, 0]
 
 def get_yo(obs):
     p_obs = len(obs)

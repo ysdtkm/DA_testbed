@@ -15,7 +15,7 @@ class TestTdvar(unittest.TestCase):
         olist = self.generate_sample_obs_list(10, t)
         anl_tdvar_minimization = tdvar(x, olist, sigma_b, t)
         anl_tdvar_analytic = tdvar_analytic(x, olist, sigma_b, t)
-        self.assertLess(np.max(np.abs(anl_tdvar_minimization - anl_tdvar_analytic)), 0.1 ** 6)
+        self.assertLess(np.max(np.abs(anl_tdvar_minimization - anl_tdvar_analytic)), 0.1 ** 5)
 
     @classmethod
     def generate_sample_obs_list(cls, num, t):
