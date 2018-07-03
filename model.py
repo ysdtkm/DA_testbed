@@ -31,7 +31,6 @@ class Model:
 
 @numba.jit("f8[:](f8[:])", nopython=True)
 def tendency(x_in):
-    # assert isinstance(x_in, np.ndarray)
     f = 8.0
     n = len(x_in)
     dx = np.empty(n)
@@ -41,8 +40,6 @@ def tendency(x_in):
 
 @numba.jit("f8[:](f8[:], f8)", nopython=True)
 def step(x, dt):
-    # assert isinstance(x, np.ndarray)
-    # assert isinstance(dt, float)
     assert dt > 0.0
     x0 = np.copy(x)
     k1 = tendency(x0)
