@@ -13,9 +13,10 @@ evince image/merged.pdf
 
 * main: run nature run, observation, and DA cycle. Output is saved at **data/**
 * da_system: wrapper for DA algorithms. It can deal 3D/4D-DA and deterministic/ensemble DA.
-* letkf: LETKF core programs
-* ensrf: Sequential EnSRF core programs
-* fdvar: 4D-Var core programs
+    * letkf: LETKF core programs
+    * ensrf: Sequential EnSRF core programs
+    * fdvar: 4D-Var core programs
+    * tdvar: 3D-Var core programs
 * model: model integration and TLM
 * obs: observation generation and xb -> yb transform.
     * class Scaler_obs allows flexible observation networks, localization, and 4D-implementation
