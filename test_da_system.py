@@ -13,6 +13,7 @@ class TestDaSystem(unittest.TestCase):
             dict(name="fdvar", method="fdvar", rho=None, k_ens=1, l_loc=None, amp_b=0.5),
             dict(name="tdvar", method="tdvar", rho=None, k_ens=1, l_loc=None, amp_b=2.0),
             dict(name="letkf", method="letkf", rho=1.0, k_ens=21, l_loc=10, amp_b=None),
+            dict(name="ensrf", method="ensrf", rho=1.0, k_ens=21, l_loc=10, amp_b=None),
         ]
         for exp in explist:
             with self.subTest(expname=exp["name"]):
