@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 
 import numpy as np
+import numba
 from const import N_MODEL
 
 class Model:
@@ -8,24 +9,7 @@ class Model:
         pass
 
     def rk4(self, x, dt):
-        # assert isinstance(x, np.ndarray)
-        assert isinstance(dt, float)
-        assert dt > 0.0
-        x0 = np.copy(x)
-        k1 = self.tendency(x0)
-        x2 = x0 + k1 * dt / 2.0
-        k2 = self.tendency(x2)
-        x3 = x0 + k2 * dt / 2.0
-        k3 = self.tendency(x3)
-        x4 = x0 + k3 * dt
-        k4 = self.tendency(x4)
-        return x0 + (k1 + 2.0 * k2 + 2.0 * k3 + k4) * dt / 6.0
-
-    def tendency(self, x_in):
-        assert isinstance(x_in, np.ndarray)
-        f = 8.0
-        dx = (np.roll(x_in, -1) - np.roll(x_in, 2)) * np.roll(x_in, 1) - x_in + f
-        return dx
+        return step(x, dt)
 
     def finite_time_tangent_using_nonlinear(self, x0, dt, iw):
         assert isinstance(x0, np.ndarray)
@@ -44,4 +28,29 @@ class Model:
                 xptb = self.rk4(xptb, dt)
             m_finite[:, j] = (xptb[:] - xctl[:]) / eps
         return m_finite
+
+@numba.jit("f8[:](f8[:])", nopython=True)
+def tendency(x_in):
+    # assert isinstance(x_in, np.ndarray)
+    f = 8.0
+    n = len(x_in)
+    dx = np.empty(n)
+    for i in range(n):
+        dx[i] = (x_in[(i + 1) % n] - x_in[(i - 2) % n]) * x_in[(i - 1) % n] - x_in[i] + f
+    return dx
+
+@numba.jit("f8[:](f8[:], f8)", nopython=True)
+def step(x, dt):
+    # assert isinstance(x, np.ndarray)
+    # assert isinstance(dt, float)
+    assert dt > 0.0
+    x0 = np.copy(x)
+    k1 = tendency(x0)
+    x2 = x0 + k1 * dt / 2.0
+    k2 = tendency(x2)
+    x3 = x0 + k2 * dt / 2.0
+    k3 = tendency(x3)
+    x4 = x0 + k3 * dt
+    k4 = tendency(x4)
+    return x0 + (k1 + 2.0 * k2 + 2.0 * k3 + k4) * dt / 6.0
 
