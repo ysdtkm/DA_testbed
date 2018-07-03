@@ -2,7 +2,7 @@
 
 import numpy as np
 import numba
-from const import N_MODEL, DT
+from const import N_MODEL
 
 class Model:
     def __init__(self):
@@ -36,9 +36,8 @@ class Model:
         x = np.random.randn(N_MODEL)
         np.random.set_state(tmp)
         for i in range(1000):
-            x = step(x, DT)
+            x = step(x, dt=0.05)
         return x
-
 
 @numba.jit("f8[:](f8[:])", nopython=True)
 def tendency(x_in):
@@ -62,3 +61,5 @@ def step(x, dt):
     k4 = tendency(x4)
     return x0 + (k1 + 2.0 * k2 + 2.0 * k3 + k4) * dt / 6.0
 
+if __name__ == "__main__":
+    print(Model.sample_state())
