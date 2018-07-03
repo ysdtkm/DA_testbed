@@ -6,7 +6,7 @@ from scipy.optimize import minimize
 from const import N_MODEL, DT
 from fdvar import static_b
 from model import Model
-from obs import getr, get_background_obs, get_h_matrix
+from obs import getr, get_background_obs, get_h_matrix, get_yo
 
 def tdvar(fcst, obs, sigma_b, t_anl):
     assert fcst.shape == (N_MODEL,)
@@ -36,13 +36,6 @@ def tdvar_analytic(fcst, obs, sigma_b, t_anl):
     anl = fcst[:, None] + delta_x
     assert anl.shape == (N_MODEL, 1)
     return anl[:, 0]
-
-def get_yo(obs):
-    p_obs = len(obs)
-    yo = np.empty((p_obs, 1))
-    for j in range(p_obs):
-        yo[j, 0] = obs[j].val
-    return yo
 
 def tdvar_2j(anl_in, fcst_in, obs, r_inv, b_inv, t_anl):
     assert anl_in.shape == fcst_in.shape == (N_MODEL,)

@@ -56,3 +56,10 @@ def get_h_matrix(obs):
     assert len(times) in [0, 1]  # synoptic
     return h
 
+def get_yo(obs):
+    p_obs = len(obs)
+    yo = np.empty((p_obs, 1))
+    for j in range(p_obs):
+        yo[j, 0] = obs[j].val
+    return yo
+
