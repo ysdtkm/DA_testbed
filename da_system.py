@@ -19,21 +19,21 @@ class Da_system:
             self.rho = settings["rho"]
             self.l_loc = settings["l_loc"]
 
-    def analyze_one_window(self, fcst, obs, t_anl, aint):
+    def analyze_one_window(self, fcst, olist, t_anl, aint):
         assert fcst.shape == (aint, self.k_ens, N_MODEL)
-        obs = list(chain.from_iterable(obs))
+        olist = list(chain.from_iterable(olist))
         if self.method == "letkf":
             assert self.k_ens > 1
-            anl = letkf(fcst, obs, self.rho, self.l_loc, t_anl, aint)
+            anl = letkf(fcst, olist, self.rho, self.l_loc, t_anl, aint)
         elif self.method == "ensrf":
             assert self.k_ens > 1
-            anl = ensrf_all(fcst, obs, self.rho, t_anl, aint)
+            anl = ensrf_all(fcst, olist, self.rho, t_anl, aint)
         elif self.method == "tdvar":
             assert self.k_ens == 1
-            anl = tdvar(fcst[0, 0, :], obs, self.amp_b, t_anl)[None, :]
+            anl = tdvar(fcst[0, 0, :], olist, self.amp_b, t_anl)[None, :]
         elif self.method == "fdvar":
             assert self.k_ens == 1
-            anl = fdvar(fcst[0, 0, :], obs, self.amp_b, t_anl, aint)[None, :]
+            anl = fdvar(fcst[0, 0, :], olist, self.amp_b, t_anl, aint)[None, :]
         else:
             raise Exception(f"analysis method mis-specified: {self.settings['method']}")
         assert anl.shape == (self.k_ens, N_MODEL)

@@ -5,10 +5,10 @@ from scipy.linalg import sqrtm
 from const import N_MODEL
 from obs import dist, getr, get_background_obs
 
-def letkf(fcst, obs, rho, l_loc, t_end, aint):
+def letkf(fcst, olist, rho, l_loc, t_end, aint):
     k_ens = fcst.shape[1]
-    assert isinstance(obs, list)
-    p_obs = len(obs)
+    assert isinstance(olist, list)
+    p_obs = len(olist)
     assert fcst.shape == (aint, k_ens, N_MODEL)
     assert isinstance(rho, float)
     assert isinstance(k_ens, int)
@@ -20,22 +20,22 @@ def letkf(fcst, obs, rho, l_loc, t_end, aint):
 
     yo = np.empty((p_obs, 1))
     for j in range(p_obs):
-        assert t_end - aint < obs[j].time <= t_end
-        yo[j, 0] = obs[j].val
-    r = getr(obs)
+        assert t_end - aint < olist[j].time <= t_end
+        yo[j, 0] = olist[j].val
+    r = getr(olist)
 
     xf_raw = fcst[-1, :, :].T
     xf = np.mean(xf_raw, axis=1)[:, np.newaxis]
     xfpt = xf_raw - xf @ i_1m
-    yb_raw = get_background_obs(obs, fcst, t_end, aint)
+    yb_raw = get_background_obs(olist, fcst, t_end, aint)
     yb = np.mean(yb_raw, axis=1)[:, np.newaxis]
     ybpt = yb_raw[:, :] - yb[:, :]
 
     xai = np.zeros((k_ens, N_MODEL))
     for i in range(N_MODEL):
         # step 3
-        ind   = obs_within(i, l_loc, obs)
-        lw    = get_localization_weight(ind, i, l_loc, obs)
+        ind   = obs_within(i, l_loc, olist)
+        lw    = get_localization_weight(ind, i, l_loc, olist)
         yol   = yo[ind, :]
         ybl   = yb[ind, :]
         ybptl = ybpt[ind, :]
@@ -54,7 +54,7 @@ def letkf(fcst, obs, rho, l_loc, t_end, aint):
 
     return xai
 
-def get_localization_weight(ind, ic, length, obs):
+def get_localization_weight(ind, ic, length, olist):
     # O(dim^2)
     assert isinstance(ind, list)
     assert isinstance(ic, int)
@@ -74,7 +74,7 @@ def get_localization_weight(ind, ic, length, obs):
     dim = len(ind)
     lw = np.ones((dim, dim))
     for j, jg in enumerate(ind):
-        di = dist(ic, obs[j].position)
+        di = dist(ic, olist[j].position)
         if smooth:
             co = gc99(di / length)
         else:
@@ -83,13 +83,13 @@ def get_localization_weight(ind, ic, length, obs):
         lw[:, j] = co
     return lw
 
-def obs_within(i, l_loc, obs):
+def obs_within(i, l_loc, olist):
     # O(p). This can be modified to O(1)
     assert isinstance(i, int)
     assert isinstance(l_loc, int)
     list_j = []
-    for j in range(len(obs)):
-        if dist(i, obs[j].position) <= l_loc:
+    for j in range(len(olist)):
+        if dist(i, olist[j].position) <= l_loc:
             list_j.append(j)
     return list_j
 

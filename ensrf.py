@@ -5,10 +5,10 @@ from scipy.linalg import sqrtm, inv
 from const import N_MODEL
 from obs import dist, getr, get_background_obs, Scaler_obs
 
-def ensrf_all(fcst, obs, rho, t_end, aint):
+def ensrf_all(fcst, olist, rho, t_end, aint):
     # 4D-EnSRF with no localization
     anl = apply_multiplicative_infl(fcst, rho)
-    for o in obs:
+    for o in olist:
         anl = ensrf_single(anl, o, t_end, aint)
     assert anl.shape == fcst.shape
     return anl[-1, :, :]
