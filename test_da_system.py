@@ -10,10 +10,10 @@ class TestDaSystem(unittest.TestCase):
     def test_analysis_closer_to_truth(self):
         np.random.seed(0)
         explist = [
-            dict(name="fdvar", method="fdvar", rho=None, k_ens=1, l_loc=None, amp_b=0.5),
-            dict(name="tdvar", method="tdvar", rho=None, k_ens=1, l_loc=None, amp_b=2.0),
-            dict(name="letkf", method="letkf", rho=1.0, k_ens=21, l_loc=10, amp_b=None),
-            dict(name="ensrf", method="ensrf", rho=1.0, k_ens=21, l_loc=10, amp_b=None),
+            dict(name="fdvar", method="fdvar", k_ens=1, amp_b=0.5),
+            dict(name="tdvar", method="tdvar", k_ens=1, amp_b=2.0),
+            dict(name="letkf", method="letkf", rho=1.0, k_ens=21, l_loc=10),
+            dict(name="ensrf", method="ensrf", rho=1.0, k_ens=21, l_loc=10),
         ]
         for exp in explist:
             with self.subTest(expname=exp["name"]):

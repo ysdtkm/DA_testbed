@@ -12,10 +12,12 @@ class Da_system:
     def __init__(self, settings):
         assert isinstance(settings, dict)
         self.method = settings["method"]
-        self.rho = settings["rho"]
         self.k_ens = settings["k_ens"]
-        self.l_loc = settings["l_loc"]
-        self.amp_b = settings["amp_b"]
+        if self.k_ens == 1:
+            self.amp_b = settings["amp_b"]
+        else:
+            self.rho = settings["rho"]
+            self.l_loc = settings["l_loc"]
 
     def analyze_one_window(self, fcst, obs, t_anl, aint):
         assert fcst.shape == (aint, self.k_ens, N_MODEL)
