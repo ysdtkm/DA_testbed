@@ -13,9 +13,13 @@ class TestTdvar(unittest.TestCase):
         x = np.random.randn(N_MODEL) * sigma_b
         t = 0
         olist = self.generate_sample_obs_list(10, t)
-        anl_tdvar_minimization = tdvar(x, olist, sigma_b, t)
-        anl_tdvar_analytic = tdvar_analytic(x, olist, sigma_b, t)
-        self.assertLess(np.max(np.abs(anl_tdvar_minimization - anl_tdvar_analytic)), 0.1 ** 5)
+        anl_tdvar_opt = tdvar(x, olist, sigma_b, t, False)
+        anl_tdvar_cvt = tdvar(x, olist, sigma_b, t, True)
+        anl_tdvar_anl = tdvar_analytic(x, olist, sigma_b, t)
+        opt_minus_anl = np.max(np.abs(anl_tdvar_opt - anl_tdvar_anl))
+        cvt_minus_anl = np.max(np.abs(anl_tdvar_cvt - anl_tdvar_anl))
+        self.assertLess(opt_minus_anl, 0.1 ** 5)
+        self.assertLess(cvt_minus_anl, 0.1 ** 5)
 
     @classmethod
     def generate_sample_obs_list(cls, num, t):

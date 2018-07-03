@@ -7,12 +7,12 @@ from const import N_MODEL, DT, static_b
 from model import Model
 from obs import getr, get_background_obs, get_h_matrix, get_yo
 
-def tdvar(fcst, obs, sigma_b, t_anl, do_cvt=True):
+def tdvar(fcst, obs, sigma_b, t_anl, do_cvt=False):
     assert fcst.shape == (N_MODEL,)
     assert_synoptic(obs, t_anl)
     r_inv = np.linalg.inv(getr(obs))
     b_inv = np.linalg.inv(sigma_b ** 2 * static_b())
-    if do_cvt:
+    if do_cvt:  # control variable transform of Bannister (2008)
         l = np.linalg.cholesky(sigma_b ** 2 * static_b())
         first_guess = np.zeros(N_MODEL)
         yo = get_yo(obs)
