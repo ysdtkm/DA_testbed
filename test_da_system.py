@@ -25,8 +25,8 @@ class TestDaSystem(unittest.TestCase):
                     truth = np.random.randn(N_MODEL)
                     fcst = np.random.randn(aint, das.k_ens, N_MODEL)
                     j = np.random.randint(N_MODEL)
-                    obs = [[Scaler_obs(truth[j], "raw", t_anl, j, oerr)]]
-                    anl = das.analyze_one_window(fcst, obs, t_anl, aint)
+                    olist = [[Scaler_obs(truth[j], "raw", t_anl, j, oerr)]]
+                    anl = das.analyze_one_window(fcst, olist, t_anl, aint)
                     self.assertEqual(anl.shape, (das.k_ens, N_MODEL))
                     fcst_err = np.mean(fcst[:, :, :], axis=(0, 1)) - truth
                     anl_err = np.mean(anl[:, :], axis=0) - truth
