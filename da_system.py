@@ -5,6 +5,7 @@ import numpy as np
 from const import N_MODEL
 from letkf import letkf
 from fdvar import fdvar
+from tdvar import tdvar
 
 class Da_system:
     def __init__(self, settings):
@@ -23,10 +24,10 @@ class Da_system:
             anl = letkf(fcst, obs, self.rho, self.l_loc, t_anl, aint)
         elif self.method == "tdvar":
             assert self.k_ens == 1
-            raise Exception("da_system.py: 3D-Var is not implemented")
+            anl = tdvar(fcst[0, 0, :], obs, self.amp_b, t_anl)[None, :]
         elif self.method == "fdvar":
             assert self.k_ens == 1
-            anl = fdvar(fcst[0, 0, :], obs, self.amp_b, t_anl, aint)[np.newaxis, :]
+            anl = fdvar(fcst[0, 0, :], obs, self.amp_b, t_anl, aint)[None, :]
         else:
             raise Exception(f"analysis method mis-specified: {self.settings['method']}")
         assert anl.shape == (self.k_ens, N_MODEL)
