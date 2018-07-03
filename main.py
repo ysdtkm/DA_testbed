@@ -13,13 +13,13 @@ def main():
     nature = exec_nature()
 
     np.random.seed(SEED * 3)
-    obs = exec_obs(nature)
+    olist = exec_obs(nature)
 
     for settings in EXPLIST:
         print("Analysis cycle: %s" % settings["name"])
         np.random.seed(SEED * 4)
         fcst = init_background(settings)
-        anl = exec_assim_cycle(settings, fcst, obs)
+        anl = exec_assim_cycle(settings, fcst, olist)
 
 def exec_nature():
     all_true = np.empty((STEPS, N_MODEL))
