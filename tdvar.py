@@ -3,8 +3,7 @@
 from functools import partial
 import numpy as np
 from scipy.optimize import minimize
-from const import N_MODEL, DT, static_b
-from model import Model
+from const import N_MODEL, static_b
 from obs import getr, get_background_obs, get_h_matrix, get_yo
 
 def tdvar(fcst, olist, sigma_b, t_anl, do_cvt=False):

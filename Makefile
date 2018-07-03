@@ -11,9 +11,9 @@
 #================================
 
 STEP_ALL = calc plot tex
-STEP_EXTENDED_ALL = $(STEP_ALL) prof
+STEP_EXTENDED_ALL = $(STEP_ALL) prof test
 
-src_calc = main.py const.py model.py da_system.py ensrf.py letkf.py obs.py fdvar.py
+src_calc = main.py const.py model.py da_system.py ensrf.py letkf.py obs.py fdvar.py tdvar.py
 dep_calc =
 out_calc = data/*.bin
 cmd_calc = find data -type f | xargs rm -f; mkdir -p data; python3 main.py
@@ -33,6 +33,11 @@ src_tex =
 dep_tex = plot
 out_tex =
 cmd_tex = python3 ~/repos/works/2018/dir_to_latex/main.py image
+
+src_test = $(src_calc)
+dep_test =
+out_test =
+cmd_test = python3 -m unittest
 
 # ===============================================
 # end of settings
@@ -60,4 +65,4 @@ clean:
 	rm -rf $(foreach i, $(STEP_EXTENDED_ALL), $(out_$i))
 	@rm -rf $(VPATH)
 
-.PHONY: all clean prof
+.PHONY: all clean prof test
