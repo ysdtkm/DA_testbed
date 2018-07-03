@@ -43,3 +43,16 @@ def get_background_obs(obs, fcst, t_end, aint):
         yb_raw = np.concatenate((yb_raw[:, :], fcst[it, :, obs[j].position][np.newaxis, :]), axis=0)
     return yb_raw
 
+def get_h_matrix(obs):
+    assert isinstance(obs, list)
+    p = len(obs)
+    h = np.zeros((p, N_MODEL))
+    times = set()
+    for i, o in enumerate(obs):
+        assert o.type == ""
+        times.add(o.time)
+        assert 0 <= o.position < N_MODEL
+        h[i, o.position] = 1.0
+    assert len(times) in [0, 1]  # synoptic
+    return h
+
