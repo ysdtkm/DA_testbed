@@ -1,20 +1,21 @@
 digraph {
-    letkf -> obs;
-    letkf -> const;
+    compound = true;
+    subgraph cluster_0 {
+        // label = "DA methods";
+        da_system -> letkf;
+        da_system -> fdvar;
+        da_system -> tdvar;
+    }
+
+    main -> da_system;
+    fdvar -> model [ltail = cluster_0];
+    fdvar -> const [ltail = cluster_0];
+    fdvar -> obs [ltail = cluster_0];
     main -> const;
     main -> model;
-    main -> da_system;
     main -> obs;
     model -> const;
     plot -> const;
-    da_system -> const;
-    da_system -> letkf;
-    da_system -> fdvar;
     obs -> const;
-    fdvar -> model;
-    fdvar -> const;
-    fdvar -> obs;
-    tdvar -> model;
-    tdvar -> const;
-    tdvar -> obs;
+
 }
