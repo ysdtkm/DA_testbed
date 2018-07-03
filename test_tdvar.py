@@ -20,6 +20,9 @@ class TestTdvar(unittest.TestCase):
         cvt_minus_anl = np.max(np.abs(anl_tdvar_cvt - anl_tdvar_anl))
         self.assertLess(opt_minus_anl, 0.1 ** 5)
         self.assertLess(cvt_minus_anl, 0.1 ** 5)
+        self.assertGreater(opt_minus_anl, 0.0)
+        self.assertGreater(cvt_minus_anl, 0.0)
+        self.assertNotEqual(opt_minus_anl, cvt_minus_anl)
 
     @classmethod
     def generate_sample_obs_list(cls, num, t):
