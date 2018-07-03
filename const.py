@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 
+from functools import lru_cache
 import numpy as np
 
 N_MODEL = 20  # dimension of model variable
@@ -31,4 +32,12 @@ def pos_obs(j):
     assert P_OBS > 0
     return j * (N_MODEL // P_OBS)
 
+@lru_cache(maxsize=1)
+def static_b():
+    b = np.load("blob/mean_b_cov.npy")
+    assert b.shape == (N_MODEL, N_MODEL)
+    eigs = np.linalg.eigvalsh(b)
+    assert np.all(eigs > 0.0)
+    b /= np.max(eigs)
+    return b
 

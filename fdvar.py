@@ -1,10 +1,10 @@
 #!/usr/bin/env python
 
-from functools import lru_cache, partial
+from functools import partial
 from scipy.optimize import minimize
 import numpy as np
 from model import Model
-from const import N_MODEL, DT
+from const import N_MODEL, DT, static_b
 from obs import getr, get_background_obs, get_yo
 
 def fdvar(fcst_0, obs, sigma_b, t_end, aint):
@@ -40,13 +40,4 @@ def fdvar_2j(anl_0, fcst_0, obs, r_inv, b_inv, t_end, aint):
            np.dot((yb_raw - yo).T, np.dot(r_inv, yb_raw - yo))
     assert twoj.shape == (1, 1)
     return twoj[0, 0]
-
-@lru_cache(maxsize=1)
-def static_b():
-    b = np.load("blob/mean_b_cov.npy")
-    assert b.shape == (N_MODEL, N_MODEL)
-    eigs = np.linalg.eigvalsh(b)
-    assert np.all(eigs > 0.0)
-    b /= np.max(eigs)
-    return b
 

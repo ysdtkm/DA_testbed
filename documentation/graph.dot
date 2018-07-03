@@ -14,4 +14,7 @@ digraph {
     fdvar -> model;
     fdvar -> const;
     fdvar -> obs;
+    tdvar -> model;
+    tdvar -> const;
+    tdvar -> obs;
 }
