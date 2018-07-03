@@ -19,7 +19,8 @@ SEED = 10 ** 6 + 3
 EXPLIST = [
     dict(name="fdvar", method="fdvar", rho=None, k_ens=1, l_loc=None, amp_b=2.0, aint=4),
     dict(name="tdvar", method="tdvar", rho=None, k_ens=1, amp_b=2.0, l_loc=None, aint=1),
-    dict(name="letkf_1", method="letkf", rho=1.2**1, k_ens=21, l_loc=10, amp_b=None, aint=1),
+    dict(name="ensrf", method="ensrf", rho=1.2**1, k_ens=21, l_loc=None, amp_b=None, aint=1),
+    dict(name="letkf", method="letkf", rho=1.2**1, k_ens=21, l_loc=10, amp_b=None, aint=1),
     # dict(name="letkf_2", method="letkf", rho=1.2**3, k_ens=21, l_loc=10, amp_b=None, aint=3),
     # dict(name="letkf_3", method="letkf", rho=1.2**10, k_ens=21, l_loc=10, amp_b=None, aint=10),
     # dict(name="letkf_4", method="letkf", rho=1.2**30, k_ens=21, l_loc=10, amp_b=None, aint=30),

@@ -3,6 +3,7 @@
 *.png
 *.npy
 *.pdf
+*.npy
 __pycache__/
 *.txt
 .make/

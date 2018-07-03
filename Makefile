@@ -13,7 +13,7 @@
 STEP_ALL = calc plot tex
 STEP_EXTENDED_ALL = $(STEP_ALL) prof
 
-src_calc = main.py const.py model.py da_system.py letkf.py obs.py fdvar.py
+src_calc = main.py const.py model.py da_system.py ensrf.py letkf.py obs.py fdvar.py
 dep_calc =
 out_calc = data/*.bin
 cmd_calc = find data -type f | xargs rm -f; mkdir -p data; python3 main.py

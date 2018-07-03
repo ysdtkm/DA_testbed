@@ -3,6 +3,7 @@ digraph {
     subgraph cluster_0 {
         // label = "DA methods";
         da_system -> letkf;
+        da_system -> ensrf;
         da_system -> fdvar;
         da_system -> tdvar;
     }

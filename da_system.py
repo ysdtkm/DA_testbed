@@ -4,6 +4,7 @@ from itertools import chain
 import numpy as np
 from const import N_MODEL
 from letkf import letkf
+from ensrf import ensrf_all
 from fdvar import fdvar
 from tdvar import tdvar
 
@@ -22,6 +23,9 @@ class Da_system:
         if self.method == "letkf":
             assert self.k_ens > 1
             anl = letkf(fcst, obs, self.rho, self.l_loc, t_anl, aint)
+        elif self.method == "ensrf":
+            assert self.k_ens > 1
+            anl = ensrf_all(fcst, obs, self.rho, t_anl, aint)
         elif self.method == "tdvar":
             assert self.k_ens == 1
             anl = tdvar(fcst[0, 0, :], obs, self.amp_b, t_anl)[None, :]
