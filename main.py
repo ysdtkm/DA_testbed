@@ -43,7 +43,7 @@ def exec_obs(nature):
         for j in range(P_OBS):
             k = pos_obs(j)
             oval = nature[i, k] + np.random.randn(1)[0] * OERR
-            obs_t.append(Scaler_obs(oval, "", i, pos_obs(j), OERR))
+            obs_t.append(Scaler_obs(oval, "raw", i, pos_obs(j), OERR))
         all_obs.append(obs_t)
     np.save("data/obs.npy", np.array(all_obs))
     return all_obs

@@ -32,5 +32,5 @@ class TestTdvar(unittest.TestCase):
         for i in range(num):
             oval = np.random.randn()
             pos = np.random.randint(0, N_MODEL)
-            li.append(Scaler_obs(oval, "", t, pos, oerr))
+            li.append(Scaler_obs(oval, "raw", t, pos, oerr))
         return li

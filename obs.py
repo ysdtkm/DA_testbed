@@ -49,7 +49,7 @@ def get_h_matrix(obs):
     h = np.zeros((p, N_MODEL))
     times = set()
     for i, o in enumerate(obs):
-        assert o.type == ""
+        assert o.type == "raw"
         times.add(o.time)
         assert 0 <= o.position < N_MODEL
         h[i, o.position] = 1.0
