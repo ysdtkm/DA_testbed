@@ -18,7 +18,7 @@ FERR_INI = 3.0
 SEED = 10 ** 6 + 3
 
 EXPLIST = [
-    dict(name="letkf_smoother", method="letkf", rho=1.05, k_ens=100, l_loc=12, amp_b=None, smoother=True),
+    dict(name="letkf_smoother", method="letkf", rho=1.15, k_ens=100, l_loc=12, amp_b=None, smoother=True),
     # dict(name="letkf_filter", method="letkf", rho=1.05, k_ens=100, l_loc=12, amp_b=None, smoother=False),
 ]
 
