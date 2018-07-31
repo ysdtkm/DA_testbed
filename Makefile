@@ -3,7 +3,7 @@ STEP_EXTENDED_ALL = $(STEP_ALL) prof test
 
 src_calc = main.py const.py model.py da_system.py letkf.py obs.py
 dep_calc =
-out_calc = data/*.bin
+out_calc = data
 cmd_calc = find data -type f | xargs rm -f && mkdir -p data && python3 main.py
 
 src_test = model.py obs.py
