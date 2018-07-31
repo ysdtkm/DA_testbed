@@ -41,7 +41,7 @@ def exec_obs(nature):
     all_obs = []
     for i in range(STEPS):
         obs_t = []
-        if i - DT_OBS + 1 < 0 or i % AINT != 0:
+        if i - DT_OBS + 1 < 0 or i % DT_OBS != 0:
             all_obs.append([])
             continue
         for j in range(P_OBS):

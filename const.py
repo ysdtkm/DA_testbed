@@ -6,13 +6,15 @@ N_MODEL = 40  # dimension of model variable
 P_OBS = N_MODEL // 2 # dimension of observation
 
 DT = 0.01
-TMAX = 100
+TMAX = 10
 STEPS = int(TMAX / DT)
 STEP_FREE = STEPS // 4
 FCST_LT = 0
-AINT = 100
 
-DT_OBS = AINT
+AINT = 100
+DT_OBS = 50
+assert AINT % DT_OBS == 0
+
 OERR = 0.5 ** 0.5
 FERR_INI = 3.0
 SEED = 10 ** 6 + 3
