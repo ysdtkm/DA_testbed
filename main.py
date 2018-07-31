@@ -27,7 +27,7 @@ def exec_nature():
     true = np.random.randn(N_MODEL) * FERR_INI
 
     # forward integration i-1 -> i
-    for i in range(0, STEPS):
+    for i in range(STEPS):
         true[:] = model_step(true[:], DT)
         all_true[i, :] = true[:]
     np.save("data/true.npy", all_true)
@@ -39,7 +39,7 @@ def exec_obs(nature):
     assert isinstance(nature, np.ndarray)
     assert nature.shape == (STEPS, N_MODEL)
     all_obs = []
-    for i in range(0, STEPS):
+    for i in range(STEPS):
         obs_t = []
         for j in range(P_OBS):
             k = pos_obs(j)
@@ -67,7 +67,7 @@ def exec_assim_cycle(settings, all_fcst, all_obs):
     aint = settings["aint"]
     try:
         for i in trange(STEP_FREE, STEPS, desc=settings["name"], ascii=True, disable=(not sys.stdout.isatty())):
-            for m in range(0, settings["k_ens"]):
+            for m in range(settings["k_ens"]):
                 all_fcst[i, m, :] = model_step(all_fcst[i - 1, m, :], DT)
             if i % aint == 0:
                 all_back_cov[i, :, :] = get_back_cov(all_fcst[i, :, :])
