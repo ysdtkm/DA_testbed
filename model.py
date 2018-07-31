@@ -30,9 +30,9 @@ def rk4(x, dt, alpha):
     return x5
 
 @jit("f8[:](f8[:], f8)", nopython=True)
-def model_step(x, dt):
-    # destracts x
-    assert x.shape == (N_MODEL,)
+def model_step(x_in, dt):
+    assert x_in.shape == (N_MODEL,)
+    x = np.copy(x_in)
     x[:N_MODEL // 2] = rk4(x[:N_MODEL // 2], dt, ALPHA_HF)
     x[N_MODEL // 2:] = rk4(x[N_MODEL // 2:], dt, ALPHA_LF)
     return x
