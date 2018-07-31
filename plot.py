@@ -14,7 +14,7 @@ def plot_all():
     os.system("mkdir -p image/true")
 
     hist_true = np.load("data/true.npy")
-    plot_true(hist_true)
+    plot_trajectory(hist_true, "true")
 
     for exp in EXPLIST:
         name = exp["name"]
@@ -24,6 +24,7 @@ def plot_all():
         hist_fcst = np.load("data/%s_cycle.npy" % name)
         back_cov = np.load("data/%s_bcov.npy" % name)
 
+        plot_trajectory(np.mean(hist_fcst, axis=1), name)
         plot_rmse_spread(hist_true, hist_fcst, name, k_ens)
         plot_time_value(hist_true, hist_fcst, name)
         plot_diff_ens_mean(hist_true, hist_fcst, name)
@@ -79,15 +80,15 @@ def plot_time_value(hist_true, hist_fcst, name):
     plt.clf()
     plt.close()
 
-def plot_true(hist_true):
+def plot_trajectory(hist_true, title):
     cm = plt.imshow(hist_true, aspect="auto")
     cm.set_clim(-10, 15)
     cb = plt.colorbar(cm)
 
     plt.xlabel("grid")
     plt.ylabel("time [step]")
-    plt.title("true")
-    plt.savefig("./image/true/true.pdf")
+    plt.title(title)
+    plt.savefig(f"./image/{title}/trajectory.pdf")
     plt.close()
 
 def plot_diff_ens_mean(hist_true, hist_fcst, name):

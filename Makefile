@@ -1,22 +1,15 @@
-#================================
-# [Usage]
-# .make/以下に作成する空ファイルのタイムスタンプで
-# 各ステップの最終実行時刻を評価
-#
-# STEP_ALL : 全ステップ名。数字以外も使用可能
-# src_step : 実行判断に利用されるソースファイル
-# dep_step : 依存するステップ名
-# out_step : 出力ファイル。make cleanで消去される。ワイルドカード可
-# cmd_step : 実行コマンド
-#================================
-
 STEP_ALL = calc plot tex
-STEP_EXTENDED_ALL = $(STEP_ALL) prof
+STEP_EXTENDED_ALL = $(STEP_ALL) prof test
 
 src_calc = main.py const.py model.py da_system.py letkf.py obs.py
 dep_calc =
 out_calc = data/*.bin
-cmd_calc = find data -type f | xargs rm -f; mkdir -p data; python3 main.py
+cmd_calc = find data -type f | xargs rm -f && mkdir -p data && python3 main.py
+
+src_test = model.py obs.py
+dep_test =
+out_test = unittest
+cmd_test = python -m unittest
 
 src_prof = $(src_calc)
 dep_prof =
@@ -26,8 +19,8 @@ cmd_prof = find data -type f | xargs rm -f; mkdir -p data; python3 -m cProfile -
 
 src_plot = plot.py const.py
 dep_plot = calc
-out_plot = image/*
-cmd_plot = find image -type f | xargs rm -f; mkdir -p image; python3 plot.py
+out_plot = image
+cmd_plot = find image -type f | xargs rm -f && mkdir -p image && python3 plot.py
 
 src_tex =
 dep_tex = plot
