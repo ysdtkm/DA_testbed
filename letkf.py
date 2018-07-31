@@ -45,7 +45,7 @@ def letkf(fcst, obs, rho, l_loc, t_end, aint):
 
         # step 4-9
         cl    = ybptl.T @ (np.linalg.inv(rl) * lw)
-        rho2  = rho if i >= N_MODEL // 2 else rho ** 5
+        rho2  = rho if i >= N_MODEL // 2 else rho ** 5  # ttk
         pal   = np.linalg.inv(((k_ens - 1.0) / rho2) * i_mm + cl @ ybptl)
         waptl = np.real(sqrtm((k_ens - 1.0) * pal))
         wal   = pal @ cl @ (yol - ybl)

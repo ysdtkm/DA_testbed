@@ -31,6 +31,7 @@ def rk4(x, dt, alpha):
 
 @jit("f8[:](f8[:], f8)", nopython=True)
 def model_step(x, dt):
+    # destract x
     assert x.shape == (N_MODEL,)
     x[:N_MODEL // 2] = rk4(x[:N_MODEL // 2], dt, ALPHA_HF)
     x[N_MODEL // 2:] = rk4(x[N_MODEL // 2:], dt, ALPHA_LF)

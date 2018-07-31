@@ -68,7 +68,8 @@ def exec_assim_cycle(settings, all_fcst, all_obs):
     try:
         for i in trange(STEP_FREE, STEPS, desc=settings["name"], ascii=True, disable=(not sys.stdout.isatty())):
             for m in range(settings["k_ens"]):
-                all_fcst[i, m, :] = model_step(all_fcst[i - 1, m, :], DT)
+                fcst = np.copy(all_fcst[i - 1, m, :])
+                all_fcst[i, m, :] = model_step(fcst, DT)
             if i % aint == 0:
                 all_back_cov[i, :, :] = get_back_cov(all_fcst[i, :, :])
                 all_fcst[i, :, :] = da_sys.analyze_one_window(
