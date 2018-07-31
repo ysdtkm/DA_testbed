@@ -31,9 +31,10 @@ class TestDaSystem(unittest.TestCase):
             das = Da_system({"method": "letkf", "rho": 1.0, "k_ens": k_ens, "l_loc": 999999999, "amp_b": None})
 
             olist = []
+            dt_obs = 1
             for i in range(P_OBS):
                 k = pos_obs(i)
-                o = generate_single_obs(true[nt - 1, :], k, 5.0, nt - 1)
+                o = generate_single_obs(true[nt - dt_obs:nt, :], k, 5.0, nt - 1, dt_obs)
                 olist.append(o)
             with warnings.catch_warnings():
                 warnings.filterwarnings("ignore",

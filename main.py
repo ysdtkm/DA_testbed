@@ -39,11 +39,12 @@ def exec_obs(nature):
     assert isinstance(nature, np.ndarray)
     assert nature.shape == (STEPS, N_MODEL)
     all_obs = []
+    dt_obs = 1
     for i in range(STEPS):
         obs_t = []
         for j in range(P_OBS):
             k = pos_obs(j)
-            o = generate_single_obs(nature[i, :], k, OERR, i)
+            o = generate_single_obs(nature[i - dt_obs + 1:i + 1, :], k, OERR, i, dt_obs)
             obs_t.append(o)
         all_obs.append(obs_t)
     np.save("data/obs.npy", np.array(all_obs))
