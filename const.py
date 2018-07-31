@@ -16,7 +16,7 @@ FERR_INI = 3.0
 SEED = 10 ** 6 + 3
 
 EXPLIST = [
-    dict(name="letkf_1", method="letkf", rho=1.05, k_ens=100, l_loc=12, amp_b=None, aint=1),
+    dict(name="letkf_1", method="letkf", rho=1.05, k_ens=100, l_loc=12, amp_b=None, aint=3),
 ]
 
 def pos_obs(j):
