@@ -5,7 +5,7 @@ import traceback
 from model import model_step
 from obs import Scaler_obs, generate_single_obs
 import numpy as np
-from const import EXPLIST, DT, STEPS, STEP_FREE, N_MODEL, P_OBS, OERR, FERR_INI, SEED, pos_obs
+from const import EXPLIST, DT, STEPS, STEP_FREE, N_MODEL, P_OBS, OERR, FERR_INI, SEED, pos_obs, DT_OBS, AINT
 from da_system import Da_system
 from tqdm import trange
 
@@ -39,12 +39,14 @@ def exec_obs(nature):
     assert isinstance(nature, np.ndarray)
     assert nature.shape == (STEPS, N_MODEL)
     all_obs = []
-    dt_obs = 1
     for i in range(STEPS):
         obs_t = []
+        if i - DT_OBS + 1 < 0 or i % AINT != 0:
+            all_obs.append([])
+            continue
         for j in range(P_OBS):
             k = pos_obs(j)
-            o = generate_single_obs(nature[i - dt_obs + 1:i + 1, :], k, OERR, i, dt_obs)
+            o = generate_single_obs(nature[i - DT_OBS + 1:i + 1, :], k, OERR, i, DT_OBS)
             obs_t.append(o)
         all_obs.append(obs_t)
     np.save("data/obs.npy", np.array(all_obs))
@@ -65,7 +67,7 @@ def exec_assim_cycle(settings, all_fcst, all_obs):
     assert len(all_obs) == STEPS
     all_back_cov = np.empty((STEPS, N_MODEL, N_MODEL))
     da_sys = Da_system(settings)
-    aint = settings["aint"]
+    aint = AINT
     try:
         for i in trange(STEP_FREE, STEPS, desc=settings["name"], ascii=True, disable=(not sys.stdout.isatty())):
             for m in range(settings["k_ens"]):

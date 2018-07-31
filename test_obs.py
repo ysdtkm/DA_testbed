@@ -7,7 +7,7 @@ from obs import generate_single_obs, Scaler_obs
 
 class TestObs(unittest.TestCase):
     def test_single_obs(self):
-        dt_obs = 1
+        dt_obs = 2
         x = np.random.randn(dt_obs, N_MODEL)
         position = np.random.randint(N_MODEL // 2)
         sigma_r = 1.0

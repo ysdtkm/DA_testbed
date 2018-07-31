@@ -3,7 +3,7 @@
 import numpy as np
 import matplotlib as mpl
 import os
-from const import N_MODEL, STEPS, OERR, EXPLIST
+from const import N_MODEL, STEPS, OERR, EXPLIST, AINT
 
 mpl.use('Agg')
 import matplotlib.pyplot as plt
@@ -28,7 +28,7 @@ def plot_all():
         plot_rmse_spread(hist_true, hist_fcst, name, k_ens)
         plot_time_value(hist_true, hist_fcst, name)
         plot_diff_ens_mean(hist_true, hist_fcst, name)
-        plot_cov_corr(back_cov, name, k_ens, exp["aint"])
+        plot_cov_corr(back_cov, name, k_ens)
 
 def plot_rmse_spread(hist_true, hist_fcst, name, k_ens):
     # Error and Spread_square for each grid and time
@@ -105,14 +105,14 @@ def plot_diff_ens_mean(hist_true, hist_fcst, name):
     plt.savefig("./image/%s/error.pdf" % name)
     plt.close()
 
-def plot_cov_corr(back_cov, name, k_ens, aint):
+def plot_cov_corr(back_cov, name, k_ens):
     def reduce(back_cov):
         sum_cov = np.zeros((N_MODEL, N_MODEL))
         sum_corr = np.zeros((N_MODEL, N_MODEL))
         sum_corr2 = np.zeros((N_MODEL, N_MODEL))
         count = 0
         for t in range(STEPS // 2, STEPS):
-            if t % aint != 0:
+            if t % AINT != 0:
                 continue
             cov = back_cov[t, :, :]
             corr = cov_to_corr(cov)
