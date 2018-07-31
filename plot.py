@@ -173,7 +173,7 @@ def plot_cov_corr(back_cov, name, k_ens, aint):
     plot_matrix(ave_cov, "./image/%s/b_cov.pdf" % name, "background covariance")
     plot_matrix(ave_corr, "./image/%s/b_corr.pdf" % name, "mean background correlation", 1.0)
     plot_matrix(rms_corr, "./image/%s/b_rms_corr.pdf" % name, "RMS background correlation", 1.0)
-    plot_corr_homo(ave_corr, rms_corr, "./image/%s/b_corr_homo.pdf" % name, k_ens)
+    # plot_corr_homo(ave_corr, rms_corr, "./image/%s/b_corr_homo.pdf" % name, k_ens)
 
 if __name__ == "__main__":
     plot_all()
