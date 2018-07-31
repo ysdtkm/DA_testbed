@@ -20,10 +20,15 @@ class Scaler_obs:
         return f"val: {self.val}\ntype: {self.type}\nposition: {self.position}\nsigma_r: {self.sigma_r}"
 
 def dist(i1, i2):
+    # Only for the model of Dirren and Hakim
     assert isinstance(i1, int)
     assert isinstance(i2, int)
-    d1 = abs(i1 - i2)
-    dist = min(d1, N_MODEL - d1)
+    assert N_MODEL % 2 == 0
+    half = N_MODEL // 2
+    i1m = i1 % half
+    i2m = i2 % half
+    d1 = abs(i1m - i2m)
+    dist = min(d1, half - d1)
     return dist
 
 def getr(obs):

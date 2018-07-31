@@ -24,7 +24,7 @@ cmd_plot = find image -type f | xargs rm -f && mkdir -p image && python3 plot.py
 
 src_tex =
 dep_tex = plot
-out_tex =
+out_tex = out.pdf
 cmd_tex = python3 ~/repos/works/2018/dir_to_latex/main.py image
 
 # ===============================================
