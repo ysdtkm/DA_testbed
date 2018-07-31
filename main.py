@@ -58,7 +58,7 @@ def init_background(settings):
             free_run[i, m, :] = model_step(free_run[i - 1, m, :], DT)
     return free_run
 
-def exec_assim_cycle(settings, all_fcst, all_obs, smoother=True):
+def exec_assim_cycle(settings, all_fcst, all_obs, smoother=False):
     assert isinstance(settings, dict)
     assert all_fcst.shape == (STEPS, settings["k_ens"], N_MODEL)
     assert len(all_obs) == STEPS
@@ -73,8 +73,11 @@ def exec_assim_cycle(settings, all_fcst, all_obs, smoother=True):
             if i % aint == 0:
                 all_back_cov[i, :, :] = get_back_cov(all_fcst[i, :, :])
                 s = np.s_[i - aint + 1:i + 1]
-                k = s if smoother else i
-                all_fcst[k, :, :] = da_sys.analyze_one_window(all_fcst[s, :, :], all_obs[s], i, aint)
+                if smoother:
+                    anl = da_sys.analyze_one_window(all_fcst[s, :, :], all_obs[s], i, aint, smoother)
+                    all_fcst[s, :, :] = anl
+                else:
+                    all_fcst[i, :, :] = da_sys.analyze_one_window(all_fcst[s, :, :], all_obs[s], i, aint, smoother)
     except (np.linalg.LinAlgError, ValueError) as e:
         print("ANALYSIS CYCLE DIVERGED: %s" % e)
         print("Settings: ", settings)

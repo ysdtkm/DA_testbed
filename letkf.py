@@ -56,16 +56,17 @@ def letkf(fcst, obs, rho, l_loc, t_end, aint, smoother):
         waptl = np.real(sqrtm((k_ens - 1.0) * pal))
         wal   = pal @ cl @ (yol - ybl)
 
+        s = np.s_[i:i + 1]
         if smoother:
-            xfl_t = xf_t[:, i:i + 1, :]
-            xfptl_t = xfpt_t[:, i:i + 1, :]
+            xfl_t = xf_t[:, s, :]
+            xfptl_t = xfpt_t[:, s, :]
             for t in range(aint):
                 xail = xfl_t[t, :, :] @ i_1m + xfptl_t[t, :, :] @ (wal @ i_1m + waptl)
                 assert xail.shape == (1, k_ens)
                 xai[t, :, i] = xail[0, :]
         else:
-            xfl = xf[i:i + 1, :]
-            xfptl = xfpt[i:i + 1, :]
+            xfl = xf[s, :]
+            xfptl = xfpt[s, :]
             xail = xfl @ i_1m + xfptl @ (wal @ i_1m + waptl)
             assert xail.shape == (1, k_ens)
             xai[:, i] = xail[0, :]

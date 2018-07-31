@@ -5,7 +5,7 @@ import numpy as np
 N_MODEL = 40  # dimension of model variable
 P_OBS = N_MODEL // 2 # dimension of observation
 
-DT = 0.05
+DT = 0.01
 TMAX = 1
 STEPS = int(TMAX / DT)
 STEP_FREE = STEPS // 4
@@ -16,7 +16,7 @@ FERR_INI = 3.0
 SEED = 10 ** 6 + 3
 
 EXPLIST = [
-    dict(name="letkf_1", method="letkf", rho=1.05, k_ens=100, l_loc=12, amp_b=None, aint=3),
+    dict(name="letkf_1", method="letkf", rho=1.05, k_ens=100, l_loc=12, amp_b=None, aint=5),
 ]
 
 def pos_obs(j):
