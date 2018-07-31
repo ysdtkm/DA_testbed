@@ -6,7 +6,7 @@ N_MODEL = 40  # dimension of model variable
 P_OBS = N_MODEL // 2 # dimension of observation
 
 DT = 0.05
-TMAX = 1
+TMAX = 10
 STEPS = int(TMAX / DT)
 STEP_FREE = STEPS // 4
 FCST_LT = 0
