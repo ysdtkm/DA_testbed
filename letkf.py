@@ -5,7 +5,7 @@ from scipy.linalg import sqrtm
 from const import N_MODEL
 from obs import dist, getr, get_background_obs
 
-def letkf(fcst, obs, rho, l_loc, t_end, aint):
+def letkf(fcst, obs, rho, l_loc, t_end, aint, smoother):
     k_ens = fcst.shape[1]
     assert isinstance(obs, list)
     p_obs = len(obs)
