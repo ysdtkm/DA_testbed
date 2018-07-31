@@ -24,14 +24,22 @@ def letkf(fcst, obs, rho, l_loc, t_end, aint, smoother):
         yo[j, 0] = obs[j].val
     r = getr(obs)
 
-    xf_raw = fcst[-1, :, :].T
-    xf = np.mean(xf_raw, axis=1)[:, np.newaxis]
-    xfpt = xf_raw - xf @ i_1m
+    if smoother:
+        xf_raw_t = np.transpose(fcst, (0, 2, 1))
+        assert xf_raw_t.shape == (aint, N_MODEL, k_ens)
+        xf_t = np.mean(xf_raw_t, axis=2)[:, :, None]
+        xfpt_t = xf_raw_t - np.repeat(xf_t, k_ens, axis=2)
+        xai = np.zeros((aint, k_ens, N_MODEL))
+    else:
+        xf_raw = fcst[-1, :, :].T
+        xf = np.mean(xf_raw, axis=1)[:, np.newaxis]
+        xfpt = xf_raw - xf @ i_1m
+        xai = np.zeros((k_ens, N_MODEL))
+
     yb_raw = get_background_obs(obs, fcst, t_end, aint)
     yb = np.mean(yb_raw, axis=1)[:, np.newaxis]
     ybpt = yb_raw[:, :] - yb[:, :]
 
-    xai = np.zeros((k_ens, N_MODEL))
     for i in range(N_MODEL):
         # step 3
         ind   = obs_within(i, l_loc, obs)
@@ -39,8 +47,6 @@ def letkf(fcst, obs, rho, l_loc, t_end, aint, smoother):
         yol   = yo[ind, :]
         ybl   = yb[ind, :]
         ybptl = ybpt[ind, :]
-        xfl   = xf[i:i + 1, :]
-        xfptl = xfpt[i:i + 1, :]
         rl    = r[ind, :][:, ind]
 
         # step 4-9
@@ -49,9 +55,20 @@ def letkf(fcst, obs, rho, l_loc, t_end, aint, smoother):
         pal   = np.linalg.inv(((k_ens - 1.0) / rho2) * i_mm + cl @ ybptl)
         waptl = np.real(sqrtm((k_ens - 1.0) * pal))
         wal   = pal @ cl @ (yol - ybl)
-        xail  = xfl @ i_1m + xfptl @ (wal @ i_1m + waptl)
-        assert xail.shape == (1, k_ens)
-        xai[:, i] = xail[0, :]
+
+        if smoother:
+            xfl_t = xf_t[:, i:i + 1, :]
+            xfptl_t = xfpt_t[:, i:i + 1, :]
+            for t in range(aint):
+                xail = xfl_t[t, :, :] @ i_1m + xfptl_t[t, :, :] @ (wal @ i_1m + waptl)
+                assert xail.shape == (1, k_ens)
+                xai[t, :, i] = xail[0, :]
+        else:
+            xfl = xf[i:i + 1, :]
+            xfptl = xfpt[i:i + 1, :]
+            xail = xfl @ i_1m + xfptl @ (wal @ i_1m + waptl)
+            assert xail.shape == (1, k_ens)
+            xai[:, i] = xail[0, :]
 
     return xai
 
