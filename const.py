@@ -7,20 +7,20 @@ N_MODEL = 20  # dimension of model variable
 P_OBS = N_MODEL  # dimension of observation
 
 DT = 0.05
-TMAX = 1
+TMAX = 100
 STEPS = int(TMAX / DT)
 STEP_FREE = STEPS // 4
 FCST_LT = 0
 
-OERR = 5.0
+OERR = 1.0
 FERR_INI = 10.0
 SEED = 10 ** 6 + 3
 
 EXPLIST = [
-    dict(name="fdvar", method="fdvar", k_ens=1, amp_b=2.0, aint=4),
-    dict(name="tdvar", method="tdvar", k_ens=1, amp_b=2.0, aint=1),
-    dict(name="ensrf", method="ensrf", rho=1.2**1, k_ens=21, l_loc=None, aint=1),
-    dict(name="letkf", method="letkf", rho=1.2**1, k_ens=21, l_loc=10, aint=1),
+    # dict(name="fdvar", method="fdvar", k_ens=1, amp_b=2.0, aint=4),
+    # dict(name="tdvar", method="tdvar", k_ens=1, amp_b=2.0, aint=1),
+    # dict(name="ensrf", method="ensrf", rho=1.2**1, k_ens=21, l_loc=None, aint=1),
+    dict(name="letkf", method="letkf", rho=1.05**1, k_ens=21, l_loc=1, aint=1),
     # dict(name="letkf_2", method="letkf", rho=1.2**3, k_ens=21, l_loc=10, aint=3),
     # dict(name="letkf_3", method="letkf", rho=1.2**10, k_ens=21, l_loc=10, aint=10),
     # dict(name="letkf_4", method="letkf", rho=1.2**30, k_ens=21, l_loc=10, aint=30),
