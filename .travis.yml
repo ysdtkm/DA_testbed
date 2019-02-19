@@ -8,7 +8,7 @@ python:
   - "3.6"
 
 install:
-  - pip install numpy matplotlib
+  - pip install numpy matplotlib numba scipy
 
 script:
   - make test
