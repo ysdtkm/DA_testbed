@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 
 import numpy as np
-import numba
 from const import N_MODEL
 
 class Model:
@@ -39,7 +38,6 @@ class Model:
             x = step(x, dt=0.05)
         return x
 
-@numba.jit("f8[:](f8[:])", nopython=True)
 def tendency(x_in):
     f = 8.0
     n = len(x_in)
@@ -48,7 +46,6 @@ def tendency(x_in):
         dx[i] = (x_in[(i + 1) % n] - x_in[(i - 2) % n]) * x_in[(i - 1) % n] - x_in[i] + f
     return dx
 
-@numba.jit("f8[:](f8[:], f8)", nopython=True)
 def step(x, dt):
     assert dt > 0.0
     x0 = np.copy(x)
